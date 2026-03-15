@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Sistema Administrativo Contable</title>
+<style>
+:root{
+  --navy:#0f2744;--blue:#1e5fa8;--blue-l:#2e7dd4;--blue-xs:#e8f1fb;
+  --green:#166534;--green-l:#dcfce7;--green-m:#22c55e;
+  --red:#991b1b;--red-l:#fee2e2;--red-m:#ef4444;
+  --amber:#92400e;--amber-l:#fef3c7;--amber-m:#f59e0b;
+  --purple:#581c87;--purple-l:#f3e8ff;
+  --gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;
+  --gray-400:#94a3b8;--gray-600:#475569;--gray-800:#1e293b;
+  --white:#ffffff;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.05);
+  --r:8px;--r-lg:12px;--r-xl:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;color:var(--gray-800);background:var(--gray-100);min-height:100vh;font-size:13px;line-height:1.5}
+#cfg-banner{background:linear-gradient(135deg,#7f1d1d,#991b1b);color:#fff;padding:10px 20px;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+#cfg-banner.hidden{display:none}
+#cfg-banner.ok{background:linear-gradient(135deg,#14532d,#166534)}
+.banner-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:6px;padding:4px 14px;font-size:11px;font-weight:700;cursor:pointer}
+.topbar{background:var(--navy);color:#fff;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:8px;height:54px;flex-shrink:0}
+.tb-brand{display:flex;align-items:center;gap:12px}
+.tb-logo{width:34px;height:34px;background:linear-gradient(135deg,var(--blue),var(--blue-l));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;flex-shrink:0}
+.tb-name{font-size:14px;font-weight:700}
+.tb-sub{font-size:10px;color:rgba(255,255,255,.45);margin-top:1px}
+.tb-right{display:flex;align-items:center;gap:6px}
+.chip{display:inline-flex;align-items:center;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600}
+.chip-year{background:rgba(255,255,255,.12);color:rgba(255,255,255,.9)}
+.chip-ipc{background:rgba(245,158,11,.2);color:#fcd34d}
+.chip-ok{background:rgba(34,197,94,.2);color:#86efac}
+.chip-err{background:rgba(239,68,68,.2);color:#fca5a5}
+.tb-sep{width:1px;background:rgba(255,255,255,.12);height:22px;margin:0 3px}
+.tb-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.85);border-radius:7px;padding:5px 13px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit}
+.tb-btn:hover{background:rgba(255,255,255,.16)}
+.tb-sel{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:7px;padding:5px 8px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;outline:none}
+.tb-sel option{background:var(--navy)}
+.navrow{background:var(--white);border-bottom:1px solid var(--gray-200);padding:0 20px;display:flex;gap:0;overflow-x:auto;flex-shrink:0}
+.nt{padding:13px 14px;font-size:12px;font-weight:600;cursor:pointer;color:var(--gray-400);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .15s}
+.nt.on{color:var(--blue);border-bottom-color:var(--blue);background:var(--blue-xs)}
+.nt:hover:not(.on){color:var(--gray-600)}
+.content{flex:1;padding:18px 20px;overflow:auto;max-width:1440px;margin:0 auto;width:100%}
+.card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--r-xl);padding:16px 18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.card-accent-blue{border-top:3px solid var(--blue)}
+.card-accent-green{border-top:3px solid var(--green-m)}
+.card-accent-red{border-top:3px solid var(--red-m)}
+.card-accent-amber{border-top:3px solid var(--amber-m)}
+.card-accent-purple{border-top:3px solid #a855f7}
+.ct{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ct-i{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.ci-blue{background:var(--blue-xs);color:var(--blue)}
+.ci-green{background:var(--green-l);color:var(--green)}
+.ci-red{background:var(--red-l);color:var(--red)}
+.ci-amber{background:var(--amber-l);color:var(--amber)}
+.ci-purple{background:var(--purple-l);color:var(--purple)}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.met{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--r-lg);padding:14px 16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.met::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.mb::before{background:var(--blue)}.mg::before{background:var(--green-m)}
+.mr::before{background:var(--red-m)}.ma::before{background:var(--amber-m)}
+.ml{font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.mv{font-size:21px;font-weight:800;line-height:1;letter-spacing:-.02em;color:var(--gray-800)}
+.ms{font-size:11px;color:var(--gray-400);margin-top:5px}
+.mv-up{color:var(--green)}.mv-dn{color:var(--red)}.mv-wa{color:var(--amber)}.mv-bl{color:var(--blue)}
+.g2{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:14px}
+.g22{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.fg label{font-size:11px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:.05em}
+.fg select,.fg input,.fg textarea{font-size:13px;padding:9px 12px;border:1.5px solid var(--gray-200);border-radius:var(--r);background:var(--white);color:var(--gray-800);font-family:inherit;width:100%;transition:border-color .15s}
+.fg select:focus,.fg input:focus,.fg textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(30,95,168,.1)}
+.fg textarea{resize:vertical;min-height:52px}
+.inp-big{font-size:18px!important;padding:12px 14px!important;font-weight:700!important}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fa{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+.btn{padding:9px 20px;border-radius:var(--r);font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.bp{background:var(--blue);color:#fff;box-shadow:0 1px 3px rgba(30,95,168,.3)}.bp:hover:not(:disabled){background:var(--blue-l)}
+.bs{background:var(--green);color:#fff;box-shadow:0 1px 3px rgba(22,101,52,.25)}.bs:hover:not(:disabled){background:#15803d}
+.bd{background:var(--red);color:#fff}.bd:hover:not(:disabled){background:#b91c1c}
+.bw{background:var(--amber);color:#fff}.bw:hover:not(:disabled){background:#b45309}
+.bpu{background:#7c3aed;color:#fff}.bpu:hover:not(:disabled){background:#6d28d9}
+.bg{background:var(--gray-100);color:var(--gray-600);border:1px solid var(--gray-200)}.bg:hover:not(:disabled){background:var(--gray-200)}
+.btn-del{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--red-m);background:var(--red-l);color:var(--red);transition:all .15s}
+.btn-del:hover{background:var(--red-m);color:#fff}
+.tbl-w{overflow-x:auto;border-radius:var(--r-lg);border:1px solid var(--gray-200);box-shadow:var(--shadow)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead tr{background:var(--navy)}
+th{color:#fff;padding:9px 12px;text-align:left;font-weight:700;font-size:11px;white-space:nowrap;letter-spacing:.03em;text-transform:uppercase}
+td{padding:8px 12px;border-bottom:1px solid var(--gray-100);color:var(--gray-800);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--blue-xs)}
+.tr-tot td{font-weight:700;background:var(--gray-50);border-top:2px solid var(--gray-200);color:var(--navy)}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.03em}
+.b-blue{background:var(--blue-xs);color:var(--blue)}
+.b-gray{background:var(--gray-100);color:var(--gray-600)}
+.rub{display:inline-flex;align-items:center;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;text-transform:uppercase}
+.r0{background:#dbeafe;color:#1e40af}.r1{background:#d1fae5;color:#065f46}
+.r2{background:#fef3c7;color:#92400e}.r3{background:#fee2e2;color:#991b1b}
+.r4{background:#f3e8ff;color:#581c87}
+.proy-t{display:inline-flex;align-items:center;background:var(--amber-l);color:var(--amber);border:1px solid #fcd34d;border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700}
+.real-t{display:inline-flex;align-items:center;background:var(--green-l);color:var(--green);border:1px solid #bbf7d0;border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700}
+.auto-t{background:var(--blue-xs);color:var(--blue);border:1px solid #bfdbfe;border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700}
+.alert{padding:11px 14px;border-radius:var(--r);font-size:12px;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px;font-weight:500;border-left:4px solid}
+.a-info{background:var(--blue-xs);color:#1e3a6e;border-color:var(--blue)}
+.a-ok{background:var(--green-l);color:#14532d;border-color:var(--green-m)}
+.a-warn{background:var(--amber-l);color:var(--amber);border-color:var(--amber-m)}
+.a-err{background:var(--red-l);color:var(--red);border-color:var(--red-m)}
+#toast{position:fixed;bottom:24px;right:24px;z-index:9999;padding:13px 18px;border-radius:var(--r-lg);font-size:13px;font-weight:700;color:#fff;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;max-width:400px;box-shadow:0 8px 24px rgba(0,0,0,.2);transform:translateY(8px)}
+#toast.show{opacity:1;transform:translateY(0)}
+#toast.tok{background:var(--green)}
+#toast.terr{background:var(--red)}
+#toast.twarn{background:var(--amber)}
+.loading{text-align:center;padding:40px;color:var(--gray-400);font-size:13px;font-weight:600}
+.spin{display:inline-block;width:22px;height:22px;border:3px solid var(--gray-200);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin-right:10px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.modal-bg{position:fixed;inset:0;background:rgba(15,39,68,.55);z-index:8888;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)}
+.modal{background:var(--white);border-radius:var(--r-xl);padding:28px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-icon{width:46px;height:46px;background:var(--red-l);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px}
+.modal-title{font-size:17px;font-weight:800;color:var(--navy);margin-bottom:8px}
+.modal-body{font-size:13px;color:var(--gray-600);margin-bottom:12px;line-height:1.6}
+.modal-det{background:var(--red-l);border:1px solid #fca5a5;border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--red);font-weight:600;margin-bottom:18px;line-height:1.5}
+.modal-acts{display:flex;gap:10px;justify-content:flex-end}
+.dup-warn{background:var(--red-l);border:1.5px solid #fca5a5;border-radius:var(--r);padding:8px 12px;font-size:11px;color:var(--red);font-weight:700;margin-top:4px;display:none}
+.fbox{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--r-lg);padding:14px 16px;margin-bottom:12px}
+.fbox .fl{font-size:11px;color:var(--gray-400);font-weight:600;margin-bottom:3px}
+.fbox .fc{font-size:11px;color:var(--gray-400);margin-bottom:4px}
+.fbox .fr{font-size:26px;font-weight:800;color:var(--green);letter-spacing:-.02em;margin-top:5px}
+.fbox .fr-r{color:var(--red)}
+.prow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:4px}
+.pbox{border-radius:var(--r-lg);padding:14px 16px}
+.pb-g{background:linear-gradient(135deg,#f0fdf4,var(--green-l));border:1px solid #bbf7d0}
+.pb-r{background:linear-gradient(135deg,#fff5f5,var(--red-l));border:1px solid #fca5a5}
+.pb-b{background:linear-gradient(135deg,#f0f7ff,var(--blue-xs));border:1px solid #bfdbfe}
+.pbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.pb-g .pbl{color:var(--green)}.pb-r .pbl{color:var(--red)}.pb-b .pbl{color:var(--blue)}
+.pbv{font-size:20px;font-weight:800;letter-spacing:-.02em}
+.pb-g .pbv{color:var(--green)}.pb-r .pbv{color:var(--red)}.pb-b .pbv{color:var(--blue)}
+.pbsub{font-size:10px;margin-top:4px;opacity:.65}
+.filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;padding:10px 12px;background:var(--gray-50);border-radius:var(--r);border:1px solid var(--gray-200)}
+.filters select,.filters input{font-size:12px;padding:6px 10px;border:1.5px solid var(--gray-200);border-radius:var(--r);background:var(--white);color:var(--gray-800);font-family:inherit}
+.sep{height:1px;background:var(--gray-200);margin:12px 0}
+.inc-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:7px 0;border-bottom:1px solid var(--gray-100)}
+.inc-row:last-child{border-bottom:none}
+.ipc-disp{background:linear-gradient(135deg,var(--amber-l),#fde68a);border:1px solid #fcd34d;border-radius:var(--r-xl);padding:8px 20px;font-size:26px;font-weight:900;color:var(--amber);text-align:center}
+.stab{padding:7px 14px;border-radius:var(--r);font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--gray-200);color:var(--gray-600);background:var(--gray-50);transition:all .15s}
+.stab.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.code-block{background:#0f172a;border-radius:var(--r-lg);padding:16px 20px;overflow-x:auto;margin:10px 0}
+.code-block pre{font-family:Consolas,monospace;font-size:11px;color:#e2e8f0;white-space:pre-wrap;line-height:1.7}
+code{background:var(--gray-100);border:1px solid var(--gray-200);border-radius:5px;padding:2px 7px;font-size:11px;font-family:monospace;color:var(--red);font-weight:600}
+.step-card{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;padding:14px 16px;background:var(--gray-50);border-radius:var(--r-lg);border:1px solid var(--gray-200)}
+.step-n{width:30px;height:30px;background:var(--navy);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0}
+.step-t{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.step-d{font-size:12px;color:var(--gray-600);line-height:1.6}
+.sheet-tab{display:inline-flex;align-items:center;padding:5px 13px;border-radius:5px 5px 0 0;font-size:12px;font-weight:700;margin-right:3px}
+.st-g{background:#16a34a;color:#fff}.st-b{background:#2563eb;color:#fff}
+.st-o{background:#ea580c;color:#fff}.st-p{background:#7c3aed;color:#fff}.st-gr{background:#64748b;color:#fff}
+.sh-tbl{border:2px solid var(--gray-200);border-radius:0 var(--r-lg) var(--r-lg) var(--r-lg);overflow:hidden}
+.sh-tbl table{font-size:12px}
+.sh-tbl th{background:#1d4ed8;color:#fff;padding:8px 12px;font-size:11px;text-transform:none;letter-spacing:0}
+.sh-tbl td{padding:7px 12px;border-bottom:1px solid var(--gray-100);font-style:italic;color:var(--blue);font-size:11px}
+.sh-tbl tr:last-child td{border-bottom:none}
+@media print{#cfg-banner,.topbar,.navrow,.no-print{display:none!important}.content{padding:0;max-width:none}.card{border:1px solid #ccc;page-break-inside:avoid;box-shadow:none}.btn{display:none!important}body{background:#fff}}
+.p-wrap{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<div id="modal-del" class="modal-bg" style="display:none">
+  <div class="modal">
+    <div class="modal-icon">⚠</div>
+    <div class="modal-title">Confirmar eliminación</div>
+    <div class="modal-body">¿Seguro que querés borrar este registro? <strong>Esta acción no se puede deshacer.</strong></div>
+    <div class="modal-det" id="modal-det">—</div>
+    <div class="modal-acts">
+      <button class="btn bg" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn bd" id="modal-ok-btn">Sí, borrar</button>
+    </div>
+  </div>
+</div>
+
+<div id="cfg-banner">
+  <span id="cfg-msg">⚠ Sistema sin configurar — conectá Google Sheets para empezar</span>
+  <button class="banner-btn" onclick="goTab('config')">Configurar ahora</button>
+</div>
+
+<div style="display:flex;flex-direction:column;min-height:100vh">
+<div class="topbar">
+  <div class="tb-brand">
+    <div class="tb-logo">SA</div>
+    <div>
+      <div class="tb-name">Sistema Administrativo</div>
+      <div class="tb-sub">Contable &amp; Financiero</div>
+    </div>
+  </div>
+  <div class="tb-right">
+    <span id="tb-conn" class="chip chip-err">Sin conexión</span>
+    <div class="tb-sep"></div>
+    <span id="tb-ipc" class="chip chip-ipc">IPC: 35%</span>
+    <select id="sel-anio" class="tb-sel" onchange="cambiarAnio()">
+      <option value="2024">2024</option><option value="2025">2025</option>
+      <option value="2026" selected>2026</option><option value="2027">2027</option>
+      <option value="2028">2028</option><option value="2029">2029</option>
+    </select>
+    <div class="tb-sep"></div>
+    <button class="tb-btn" onclick="sincronizar()">↺ Sincronizar</button>
+    <button class="tb-btn" onclick="goTab('config')">⚙ Configurar</button>
+  </div>
+</div>
+<div class="navrow">
+  <div class="nt on" onclick="goTab('dashboard')">▦ Dashboard</div>
+  <div class="nt" onclick="goTab('ingresos')">↑ Ingresos</div>
+  <div class="nt" onclick="goTab('egresos')">↓ Egresos</div>
+  <div class="nt" onclick="goTab('clientes')">◉ Clientes</div>
+  <div class="nt" onclick="goTab('presupuesto')">◈ Presupuesto / IPC</div>
+  <div class="nt" onclick="goTab('proyecciones')">↗ Proyecciones</div>
+  <div class="nt" onclick="goTab('informes')">⊞ Informes</div>
+  <div class="nt" onclick="goTab('exportar')">⬇ Exportar Excel</div>
+  <div class="nt" onclick="goTab('basedatos')">◧ Base de Datos</div>
+  <div class="nt" onclick="goTab('guia')">? Guía Google Sheets</div>
+  <div class="nt" onclick="goTab('config')">⚙ Configurar</div>
+</div>
+<div class="content" id="MC"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════
+// BASE DE DATOS REAL — extraída del Excel Planilla_2026_-vf.xlsm
+// ═══════════════════════════════════════════════════════
+var CFG={scriptUrl:localStorage.getItem('sa_script_url')||'',ipc:parseFloat(localStorage.getItem('sa_ipc')||'35')};
+
+// DATOS REALES DEL EXCEL — siempre disponibles aunque no haya conexión
+var DATA_BASE = {
+  clientes:[
+    {id:1,n:'CENCOSUD',t:'EMPRESA',cuit:'',email:'',tel:''},
+    {id:2,n:'TARJETA NARANJA',t:'EMPRESA',cuit:'',email:'',tel:''},
+    {id:3,n:'CREDIMACO SA',t:'EMPRESA',cuit:'',email:'',tel:''},
+    {id:4,n:'CEIBO CREDITOS',t:'EMPRESA',cuit:'',email:'',tel:''},
+    {id:5,n:'CREDITECH SA',t:'EMPRESA',cuit:'',email:'',tel:''},
+    {id:6,n:'SANTANDER CONSUMER',t:'EMPRESA',cuit:'',email:'',tel:''},
+    {id:7,n:'MOOVITECH',t:'EMPRESA',cuit:'',email:'',tel:''},
+    {id:8,n:'CREDITO DIRECTO SA',t:'EMPRESA',cuit:'',email:'',tel:''},
+    {id:9,n:'BANCO COLUMBIA',t:'EMPRESA',cuit:'',email:'',tel:''},
+    {id:10,n:'NALDO LOMBARDI SA',t:'EMPRESA',cuit:'',email:'',tel:''},
+    {id:11,n:'CARTA SUR CARDS SA',t:'EMPRESA',cuit:'',email:'',tel:''},
+    {id:12,n:'MANDYSER SA/ONERI BILANCIO',t:'EMPRESA',cuit:'',email:'',tel:''},
+    {id:13,n:'GO SERVICIOS DIGITALES SAS',t:'EMPRESA',cuit:'',email:'',tel:''},
+    {id:14,n:'ELECTRONICA MEGATONE SRL',t:'EMPRESA',cuit:'',email:'',tel:''},
+    {id:15,n:'CFN SRL',t:'EMPRESA',cuit:'',email:'',tel:''},
+    {id:16,n:'COPPEL',t:'EMPRESA',cuit:'',email:'',tel:''},
+    {id:17,n:'INDO',t:'EMPRESA',cuit:'',email:'',tel:''},
+    {id:18,n:'FRAVEGA',t:'EMPRESA',cuit:'',email:'',tel:''},
+    {id:19,n:'CARREFOUR',t:'EMPRESA',cuit:'',email:'',tel:''},
+    {id:20,n:'OTROS',t:'OTROS',cuit:'',email:'',tel:''}
+  ],
+  rubros:[
+    {id:1,n:'REMUNERACIONES',activo:true},
+    {id:2,n:'SERVICIOS',activo:true},
+    {id:3,n:'GASTOS ACTIVIDAD',activo:true},
+    {id:4,n:'IMPUESTOS',activo:true},
+    {id:5,n:'PLANES MEDICOS COMPANIA',activo:true}
+  ],
+  tiposGasto:[
+    // REMUNERACIONES (rubId=1)
+    {id:1,rubId:1,n:'SUELDO DIRECTOR MGS'},
+    {id:2,rubId:1,n:'SUELDO DIRECTOR SEGAL S'},
+    {id:3,rubId:1,n:'SUELDO PERSONAL'},
+    {id:4,rubId:1,n:'PRESTAMOS PERSONALES'},
+    // SERVICIOS (rubId=2)
+    {id:5,rubId:2,n:'MOVISTAR Y CLARO'},
+    {id:6,rubId:2,n:'IPLAN'},
+    {id:7,rubId:2,n:'ALQUILERES'},
+    {id:8,rubId:2,n:'EXPENSAS'},
+    {id:9,rubId:2,n:'SERV.(XUBIO-SEG.)+INTER.CAFÉ.REMISE.CORREO.PAÑ.MC'},
+    {id:10,rubId:2,n:'SERVICIOS OF. LUZ - AYSA - LER Y OTROS'},
+    {id:11,rubId:2,n:'ESTUDIO JURÍDICO -DR CARRERAS'},
+    {id:12,rubId:2,n:'ESTUDIO CONTABLE CDOR. BELINCO-LEG BAL.SIDEI'},
+    {id:13,rubId:2,n:'CAMARAEE.UU - CÁMARA FINTECH - CEIC'},
+    {id:14,rubId:2,n:'GOOGLE AD'},
+    {id:15,rubId:2,n:'SERVICIO MARKETING PGL/ENRIQUE EMILIANO PD.'},
+    {id:16,rubId:2,n:'BRAND PR/MUNIK CÍA. CONTEMPORÁNEA'},
+    {id:17,rubId:2,n:'ROMERO FG'},
+    {id:18,rubId:2,n:'ESCALA 24 X 7'},
+    {id:19,rubId:2,n:'TARJETA VISA EMPRESA'},
+    {id:20,rubId:2,n:'FIN DE AÑO/GASTOS DIC Y ENE/COMPRA SERVIDOR'},
+    {id:21,rubId:2,n:'CEIC- DESDE AGOSTO SKILLS'},
+    {id:22,rubId:2,n:'NOTEB. P/G.D.S. 3/25/BELINCO TASAS LEGALIZADAS'},
+    {id:23,rubId:2,n:'ESCRIBANÍA QUINOS/ESCRIBANÍA GOWLAND'},
+    // GASTOS ACTIVIDAD (rubId=3)
+    {id:24,rubId:3,n:'LICITACIÓN GTIAS- GASTOS/LOZA G. TEMA NAVE'},
+    {id:25,rubId:3,n:'BE SMART'},
+    {id:26,rubId:3,n:'AVIANCA MGS'},
+    {id:27,rubId:3,n:'IMPUESTOS - DIVIDENDOS'},
+    // IMPUESTOS (rubId=4)
+    {id:28,rubId:4,n:'IVA11-12DB+ CUOTA3/6(6)454836-2 /7-1/8(6)'},
+    {id:29,rubId:4,n:'IIBB'},
+    {id:30,rubId:4,n:'SICORE'},
+    {id:31,rubId:4,n:'SUSS'},
+    {id:32,rubId:4,n:'AUTONOMOS-MONOTRIBUTO-BSPS/MONOT BELLOTI'},
+    {id:33,rubId:4,n:'DIVIDENDOS/RETIROS MGS/RETIRO DS'},
+    {id:34,rubId:4,n:'DIVIDENDOS SS Y DS.'},
+    {id:35,rubId:4,n:'IIBB- BSPS MGS'},
+    {id:36,rubId:4,n:'IMPTOS GS SIISA 1/3- GS 1/3 Y BSPS MGS/ANT.GAN'},
+    {id:37,rubId:4,n:'PLAN GS.- ANTICIPOS 2024 GS 1/7'},
+    // PLANES MEDICOS COMPANIA (rubId=5)
+    {id:38,rubId:5,n:'SWISS MEDICALMGS'},
+    {id:39,rubId:5,n:'OSDE SEGAL S.'},
+    {id:40,rubId:5,n:'OSDE DIF PERS. Y SWISS'}
+  ],
+  productos:[
+    {id:1,n:'BASE'},{id:2,n:'SCORE'},{id:3,n:'MOTOR'},{id:4,n:'KEY'}
+  ],
+  // INGRESOS ENERO 2026 — datos reales del Excel
+  ingresos:[
+    {id:10001,cli:1,prod:'',imp:0,iva:0,fecha:'2026-01-01',mes:1,anio:2026,obs:''},
+    {id:10002,cli:2,prod:'',imp:86381636,iva:0,fecha:'2026-01-01',mes:1,anio:2026,obs:''},
+    {id:10003,cli:3,prod:'',imp:3896364,iva:0,fecha:'2026-01-01',mes:1,anio:2026,obs:''},
+    {id:10004,cli:4,prod:'',imp:26301528,iva:0,fecha:'2026-01-01',mes:1,anio:2026,obs:''},
+    {id:10005,cli:5,prod:'',imp:15022459,iva:0,fecha:'2026-01-01',mes:1,anio:2026,obs:''},
+    {id:10006,cli:6,prod:'',imp:22349511,iva:0,fecha:'2026-01-01',mes:1,anio:2026,obs:''},
+    {id:10007,cli:7,prod:'',imp:12311749,iva:0,fecha:'2026-01-01',mes:1,anio:2026,obs:''},
+    {id:10008,cli:8,prod:'',imp:19055898,iva:0,fecha:'2026-01-01',mes:1,anio:2026,obs:''},
+    {id:10009,cli:9,prod:'',imp:14356609,iva:0,fecha:'2026-01-01',mes:1,anio:2026,obs:''},
+    {id:10010,cli:10,prod:'',imp:2733131,iva:0,fecha:'2026-01-01',mes:1,anio:2026,obs:''},
+    {id:10011,cli:11,prod:'MOTOR',imp:17650145,iva:0,fecha:'2026-01-01',mes:1,anio:2026,obs:''},
+    {id:10012,cli:12,prod:'KEY',imp:6573406,iva:0,fecha:'2026-01-01',mes:1,anio:2026,obs:''},
+    {id:10013,cli:13,prod:'',imp:19019512,iva:0,fecha:'2026-01-01',mes:1,anio:2026,obs:''},
+    {id:10014,cli:14,prod:'SCORE',imp:11351007,iva:0,fecha:'2026-01-01',mes:1,anio:2026,obs:''},
+    {id:10015,cli:15,prod:'',imp:28403109,iva:0,fecha:'2026-01-01',mes:1,anio:2026,obs:''},
+    {id:10016,cli:16,prod:'',imp:11360301,iva:0,fecha:'2026-01-01',mes:1,anio:2026,obs:''},
+    {id:10017,cli:17,prod:'BASE',imp:3785493,iva:0,fecha:'2026-01-01',mes:1,anio:2026,obs:''},
+    {id:10018,cli:18,prod:'',imp:4260714,iva:0,fecha:'2026-01-01',mes:1,anio:2026,obs:''},
+    {id:10019,cli:19,prod:'',imp:6098403,iva:0,fecha:'2026-01-01',mes:1,anio:2026,obs:''},
+    {id:10020,cli:20,prod:'',imp:100000000,iva:0,fecha:'2026-01-01',mes:1,anio:2026,obs:''}
+  ],
+  // EGRESOS ENERO 2026 — datos reales del Excel
+  egresos:[
+    {id:20001,rub:'REMUNERACIONES',tipo:'SUELDO DIRECTOR MGS',monto:2762374,fecha:'2026-01-01',mes:1,anio:2026,asig:'REMUNERACIONES'},
+    {id:20002,rub:'REMUNERACIONES',tipo:'SUELDO DIRECTOR SEGAL S',monto:3778091,fecha:'2026-01-01',mes:1,anio:2026,asig:'REMUNERACIONES'},
+    {id:20003,rub:'REMUNERACIONES',tipo:'SUELDO PERSONAL',monto:99200000,fecha:'2026-01-01',mes:1,anio:2026,asig:'REMUNERACIONES'},
+    {id:20004,rub:'SERVICIOS',tipo:'MOVISTAR Y CLARO',monto:1079786,fecha:'2026-01-01',mes:1,anio:2026,asig:'SERVICIOS'},
+    {id:20005,rub:'SERVICIOS',tipo:'IPLAN',monto:260757,fecha:'2026-01-01',mes:1,anio:2026,asig:'SERVICIOS'},
+    {id:20006,rub:'SERVICIOS',tipo:'ALQUILERES',monto:1800000,fecha:'2026-01-01',mes:1,anio:2026,asig:'SERVICIOS'},
+    {id:20007,rub:'SERVICIOS',tipo:'EXPENSAS',monto:833131,fecha:'2026-01-01',mes:1,anio:2026,asig:'SERVICIOS'},
+    {id:20008,rub:'SERVICIOS',tipo:'SERV.(XUBIO-SEG.)+INTER.CAFÉ.REMISE.CORREO.PAÑ.MC',monto:255974,fecha:'2026-01-01',mes:1,anio:2026,asig:'SERVICIOS'},
+    {id:20009,rub:'SERVICIOS',tipo:'SERVICIOS OF. LUZ - AYSA - LER Y OTROS',monto:126983,fecha:'2026-01-01',mes:1,anio:2026,asig:'SERVICIOS'},
+    {id:20010,rub:'SERVICIOS',tipo:'ESTUDIO JURÍDICO -DR CARRERAS',monto:516532,fecha:'2026-01-01',mes:1,anio:2026,asig:'SERVICIOS'},
+    {id:20011,rub:'SERVICIOS',tipo:'ESTUDIO CONTABLE CDOR. BELINCO-LEG BAL.SIDEI',monto:1874600,fecha:'2026-01-01',mes:1,anio:2026,asig:'SERVICIOS'},
+    {id:20012,rub:'SERVICIOS',tipo:'CAMARAEE.UU - CÁMARA FINTECH - CEIC',monto:691215,fecha:'2026-01-01',mes:1,anio:2026,asig:'SERVICIOS'},
+    {id:20013,rub:'SERVICIOS',tipo:'GOOGLE AD',monto:350000,fecha:'2026-01-01',mes:1,anio:2026,asig:'SERVICIOS'},
+    {id:20014,rub:'SERVICIOS',tipo:'SERVICIO MARKETING PGL/ENRIQUE EMILIANO PD.',monto:293575,fecha:'2026-01-01',mes:1,anio:2026,asig:'SERVICIOS'},
+    {id:20015,rub:'SERVICIOS',tipo:'BRAND PR/MUNIK CÍA. CONTEMPORÁNEA',monto:1477681,fecha:'2026-01-01',mes:1,anio:2026,asig:'SERVICIOS'},
+    {id:20016,rub:'SERVICIOS',tipo:'ROMERO FG',monto:3544730,fecha:'2026-01-01',mes:1,anio:2026,asig:'SERVICIOS'},
+    {id:20017,rub:'SERVICIOS',tipo:'ESCALA 24 X 7',monto:32628363,fecha:'2026-01-01',mes:1,anio:2026,asig:'SERVICIOS'},
+    {id:20018,rub:'SERVICIOS',tipo:'TARJETA VISA EMPRESA',monto:3402256,fecha:'2026-01-01',mes:1,anio:2026,asig:'SERVICIOS'},
+    {id:20019,rub:'SERVICIOS',tipo:'SERV.(XUBIO-SEG.)+INTER.CAFÉ.REMISE.CORREO.PAÑ.MC',monto:187363,fecha:'2026-01-01',mes:1,anio:2026,asig:'SERVICIOS'},
+    {id:20020,rub:'GASTOS ACTIVIDAD',tipo:'BE SMART',monto:7362388,fecha:'2026-01-01',mes:1,anio:2026,asig:'GASTOS ACTIVIDAD'},
+    {id:20021,rub:'IMPUESTOS',tipo:'IVA11-12DB+ CUOTA3/6(6)454836-2 /7-1/8(6)',monto:68047914,fecha:'2026-01-01',mes:1,anio:2026,asig:'IMPUESTOS'},
+    {id:20022,rub:'IMPUESTOS',tipo:'IIBB',monto:8523135,fecha:'2026-01-01',mes:1,anio:2026,asig:'IMPUESTOS'},
+    {id:20023,rub:'IMPUESTOS',tipo:'SICORE',monto:64437725,fecha:'2026-01-01',mes:1,anio:2026,asig:'IMPUESTOS'},
+    {id:20024,rub:'IMPUESTOS',tipo:'SUSS',monto:57721067,fecha:'2026-01-01',mes:1,anio:2026,asig:'IMPUESTOS'},
+    {id:20025,rub:'IMPUESTOS',tipo:'AUTONOMOS-MONOTRIBUTO-BSPS/MONOT BELLOTI',monto:365332,fecha:'2026-01-01',mes:1,anio:2026,asig:'IMPUESTOS'},
+    {id:20026,rub:'IMPUESTOS',tipo:'DIVIDENDOS/RETIROS MGS/RETIRO DS',monto:22513280,fecha:'2026-01-01',mes:1,anio:2026,asig:'IMPUESTOS'},
+    {id:20027,rub:'IMPUESTOS',tipo:'IMPTOS GS SIISA 1/3- GS 1/3 Y BSPS MGS/ANT.GAN',monto:30207255,fecha:'2026-01-01',mes:1,anio:2026,asig:'IMPUESTOS'},
+    {id:20028,rub:'PLANES MEDICOS COMPANIA',tipo:'SWISS MEDICALMGS',monto:738187,fecha:'2026-01-01',mes:1,anio:2026,asig:'PLANES MEDICOS COMPANIA'},
+    {id:20029,rub:'PLANES MEDICOS COMPANIA',tipo:'OSDE SEGAL S.',monto:617225,fecha:'2026-01-01',mes:1,anio:2026,asig:'PLANES MEDICOS COMPANIA'},
+    {id:20030,rub:'PLANES MEDICOS COMPANIA',tipo:'OSDE DIF PERS. Y SWISS',monto:1048723,fecha:'2026-01-01',mes:1,anio:2026,asig:'PLANES MEDICOS COMPANIA'}
+  ],
+  ajustes:{}
+};
+
+// HISTÓRICO (para gráficos)
+const HIST={
+  p:['Dic-23','Ene-24','Feb-24','Mar-24','Abr-24','May-24','Jun-24','Jul-24','Ago-24','Sep-24','Oct-24','Nov-24','Dic-24','Ene-25','Feb-25','Mar-25','Abr-25','May-25','Jun-25','Jul-25','Ago-25','Sep-25','Oct-25','Nov-25','Dic-25','Ene-26'],
+  i:[64166484,81781412,85111760,99042365,108470200,127527782,148778340,179071529,222170102,231025151,265015896,262998260,274377189,287831262,272725439,294728729,305556021,338029174,331039346,376254179,393169477,427253878,406675836,412333160,418745066,410910975],
+  e:[47387090,60126424,46338875,53285478,67637204,105016008,112738734,142253727,128852284,147339716,160346121,188390292,225645652,216207873,212910084,228438059,274805753,276169130,293429477,303362039,281876078,317278663,314066363,458128058,413300171,416645642]
+};
+
+// CACHE — mezcla datos base + lo que viene de Google Sheets
+var CACHE = JSON.parse(JSON.stringify(DATA_BASE));
+CACHE.loaded = false;
+
+// Intentar cargar desde localStorage (datos más nuevos que el base)
+(function init(){
+  const saved = localStorage.getItem('sa_cache_v2');
+  if(saved){
+    try{
+      const p = JSON.parse(saved);
+      // Merge: usar Sheets si tiene MÁS datos que el base
+      if(p.ingresos && p.ingresos.length > DATA_BASE.ingresos.length) CACHE.ingresos = p.ingresos;
+      if(p.egresos  && p.egresos.length  > DATA_BASE.egresos.length)  CACHE.egresos  = p.egresos;
+      if(p.clientes && p.clientes.length > DATA_BASE.clientes.length) CACHE.clientes = p.clientes;
+      if(p.rubros   && p.rubros.length   > DATA_BASE.rubros.length)   CACHE.rubros   = p.rubros;
+      if(p.tiposGasto && p.tiposGasto.length > DATA_BASE.tiposGasto.length) CACHE.tiposGasto = p.tiposGasto;
+      if(p.productos && p.productos.length > DATA_BASE.productos.length) CACHE.productos = p.productos;
+      if(p.ajustes) CACHE.ajustes = p.ajustes;
+      CACHE.loaded = true;
+    }catch(e){}
+  }
+  // Siempre disponible con los datos del Excel aunque no haya Sheets
+  CACHE.loaded = true;
+  if(!CFG.scriptUrl) setConn(false,'⚠ Sin Google Sheets — usando datos del Excel. Configurá para guardar nuevos registros.');
+  else setConn(true);
+  syncChips();
+})();
+
+function saveCache(){localStorage.setItem('sa_cache_v2',JSON.stringify(CACHE));}
+
+const MESES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const RCLR=['#1e40af','#16a34a','#92400e','#991b1b','#581c87'];
+let anio=2026,tab='dashboard',CH={};
+const $=id=>document.getElementById(id);
+const fmt=n=>Math.round(n||0).toLocaleString('es-AR');
+const fmtM=n=>{const v=Math.abs(n||0);return v>=1e9?(n<0?'-':'')+'$'+Math.round(v/1e8)/10+'B':v>=1e6?(n<0?'-':'')+'$'+Math.round(v/1e5)/10+'M':'$'+fmt(n);}
+const gCli=id=>{const c=CACHE.clientes.find(x=>x.id==id);return c?c.n:String(id);}
+const rNms=()=>CACHE.rubros.filter(x=>x.activo).map(x=>x.n);
+const rCls=r=>{const i=rNms().indexOf(r);return'r'+(i>=0?i%5:0);}
+const totI=(m,a)=>CACHE.ingresos.filter(x=>(!m||x.mes==m)&&(!a||x.anio==a)).reduce((s,x)=>s+(+x.imp||0)+(+x.iva||0),0);
+const totE=(m,a)=>CACHE.egresos.filter(x=>(!m||x.mes==m)&&(!a||x.anio==a)).reduce((s,x)=>s+(+x.monto||0),0);
+const totER=(r,a)=>CACHE.egresos.filter(x=>x.rub===r&&(!a||x.anio==a)).reduce((s,x)=>s+(+x.monto||0),0);
+function iPI(a){return Math.round((totI(0,a)||totI(0,2026))*(1+CFG.ipc/100));}
+function iPER(r,a){const d=CACHE.ajustes[r]||{pct:0,manual:0};if(+d.manual>0)return +d.manual;const p=+d.pct>0?+d.pct:CFG.ipc;return Math.round((totER(r,a)||totER(r,2026))*(1+p/100));}
+function iPET(a){return rNms().reduce((s,r)=>s+iPER(r,a),0);}
+
+let toastT=null;
+function toast(msg,t='tok'){const el=$('toast');if(!el)return;if(toastT)clearTimeout(toastT);el.textContent=msg;el.className='show '+t;toastT=setTimeout(()=>{el.className='';},4000);}
+function setConn(ok,msg){
+  const el=$('tb-conn');if(!el)return;
+  el.textContent=ok?'✔ Conectado':'⚡ Modo local';el.className='chip '+(ok?'chip-ok':'chip-ipc');
+  const b=$('cfg-banner');if(!b)return;
+  if(ok){b.className='hidden';}else{b.className='';const m=$('cfg-msg');if(m)m.textContent=msg||'⚠ Sin conexión';}
+}
+function syncChips(){$('tb-ipc').textContent='IPC: '+CFG.ipc+'%';}
+function killCH(){Object.values(CH).forEach(c=>{try{c.destroy()}catch(e){}});CH={};}
+function goTab(t){
+  tab=t;killCH();$('MC').innerHTML='';
+  document.querySelectorAll('.nt').forEach((el,i)=>{
+    el.classList.toggle('on',['dashboard','ingresos','egresos','clientes','presupuesto','proyecciones','informes','exportar','basedatos','guia','config'][i]===t);
+  });
+  ({dashboard:rDash,ingresos:rIng,egresos:rEgr,clientes:rCli,presupuesto:rPres,proyecciones:rProy,informes:rInf,exportar:rExp,basedatos:rBase,guia:rGuia,config:rConfig})[t]();
+}
+function cambiarAnio(){anio=parseInt($('sel-anio').value);syncChips();goTab(tab);}
+
+let _delFn=null;
+function confirmarBorrado(det,fn){$('modal-det').textContent=det;_delFn=fn;$('modal-del').style.display='flex';$('modal-ok-btn').onclick=async()=>{cerrarModal();await fn();};}
+function cerrarModal(){$('modal-del').style.display='none';_delFn=null;}
+$('modal-del').addEventListener('click',e=>{if(e.target===$('modal-del'))cerrarModal();});
+
+async function apiCall(action,payload={}){
+  if(!CFG.scriptUrl) throw new Error('No script URL');
+  const url=CFG.scriptUrl+'?action='+action+(Object.keys(payload).length?'&data='+encodeURIComponent(JSON.stringify(payload)):'');
+  const res=await fetch(url);if(!res.ok)throw new Error('HTTP '+res.status);
+  const json=await res.json();if(json.error)throw new Error(json.error);return json;
+}
+
+async function sincronizar(){
+  if(!CFG.scriptUrl){toast('Configurá Google Sheets primero (pestaña ⚙ Configurar)','twarn');return;}
+  const mc=$('MC');const prev=mc.innerHTML;
+  mc.innerHTML='<div class="loading"><span class="spin"></span>Sincronizando con Google Sheets...</div>';
+  try{
+    const data=await apiCall('getAll');
+    // Combinar: Sheets sobreescribe si tiene más datos; sino mantener datos del Excel
+    if(data.clientes?.length)   CACHE.clientes   = data.clientes;
+    if(data.rubros?.length)     CACHE.rubros     = data.rubros;
+    if(data.tiposGasto?.length) CACHE.tiposGasto = data.tiposGasto;
+    if(data.productos?.length)  CACHE.productos  = data.productos;
+    if(data.ingresos?.length)   CACHE.ingresos   = data.ingresos;
+    if(data.egresos?.length)    CACHE.egresos    = data.egresos;
+    if(data.ajustes)            CACHE.ajustes    = data.ajustes;
+    if(data.ipc!==undefined){CFG.ipc=+data.ipc;localStorage.setItem('sa_ipc',String(CFG.ipc));}
+    saveCache();setConn(true);syncChips();
+    toast('✔ Sincronizado con Google Sheets','tok');goTab(tab);
+  }catch(e){
+    mc.innerHTML=prev;
+    toast('⚡ Usando datos del Excel (sin conexión a Sheets)','twarn');
+    goTab(tab);
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════
+function rDash(){
+  const a=anio,ap=a+1,ti=totI(0,a),te=totE(0,a),res=ti-te,ip=iPI(a),ep=iPET(a);
+  const meses=MESES.map((m,i)=>({m,i:i+1,ti:totI(i+1,a),te:totE(i+1,a)})).filter(x=>x.ti||x.te);
+  $('MC').innerHTML=`
+<div class="metrics">
+  <div class="met mb"><div class="ml">Ingresos reales ${a}</div><div class="mv mv-bl">${fmtM(ti)}</div><div class="ms">${CACHE.ingresos.filter(x=>x.anio==a).length} registros · sin IPC</div></div>
+  <div class="met mr"><div class="ml">Egresos reales ${a}</div><div class="mv mv-dn">${fmtM(te)}</div><div class="ms">${CACHE.egresos.filter(x=>x.anio==a).length} registros · sin IPC</div></div>
+  <div class="met ${res>=0?'mg':'mr'}"><div class="ml">Resultado neto ${a}</div><div class="mv ${res>=0?'mv-up':'mv-dn'}">${res>=0?'+':'-'}${fmtM(Math.abs(res))}</div><div class="ms">${ti>0?Math.round(te/ti*100):0}% incidencia gastos</div></div>
+  <div class="met ma"><div class="ml">Proyección ${ap} · IPC ${CFG.ipc}%</div><div class="mv mv-wa">${fmtM(ip)}</div><div class="ms">Egresos est.: ${fmtM(ep)}</div></div>
+</div>
+<div class="card card-accent-amber">
+  <div class="ct"><div class="ct-i ci-amber">◈</div>Proyección automática ${ap} — IPC ${CFG.ipc}% sobre reales ${a}</div>
+  <div class="prow">
+    <div class="pbox pb-g"><div class="pbl">Ingresos a lograr ${ap}</div><div class="pbv">${fmtM(ip)}</div><div class="pbsub">${fmtM(ti)} × (1+${CFG.ipc}%)</div></div>
+    <div class="pbox pb-r"><div class="pbl">Egresos estimados ${ap}</div><div class="pbv">${fmtM(ep)}</div><div class="pbsub">${fmtM(te)} × (1+${CFG.ipc}%)</div></div>
+    <div class="pbox pb-b"><div class="pbl">Resultado proyectado ${ap}</div><div class="pbv" style="color:${ip-ep>=0?'var(--green)':'var(--red)'}">${ip-ep>=0?'+':'-'}${fmtM(Math.abs(ip-ep))}</div><div class="pbsub">${ip>0?Math.round(ep/ip*100):0}% inc. gastos proy.</div></div>
+  </div>
+</div>
+${meses.length?`
+<div class="g22">
+  <div class="card card-accent-blue"><div class="ct"><div class="ct-i ci-blue">▦</div>Evolución mensual ${a} <span class="real-t">real</span></div><div style="position:relative;height:200px"><canvas id="ch-ev"></canvas></div></div>
+  <div class="card card-accent-amber"><div class="ct"><div class="ct-i ci-amber">◈</div>Real ${a} vs proyectado ${ap}</div><div style="position:relative;height:200px"><canvas id="ch-cmp"></canvas></div></div>
+</div>
+<div class="card card-accent-blue"><div class="ct"><div class="ct-i ci-blue">◉</div>Top clientes — ${a}</div><div style="position:relative;height:${Math.min(10,CACHE.clientes.length)*36+60}px"><canvas id="ch-cl"></canvas></div></div>`
+:'<div class="card" style="text-align:center;padding:40px;color:var(--gray-400)"><div style="font-size:36px;margin-bottom:10px">◎</div><div style="font-size:14px;font-weight:700">Sin datos para el año '+a+'</div></div>'}`;
+  if(!meses.length)return;
+  setTimeout(()=>{
+    const c1=$('ch-ev');if(c1)CH['ev']=new Chart(c1,{type:'bar',data:{labels:meses.map(x=>x.m.slice(0,3)),datasets:[{label:'Ingresos',data:meses.map(x=>x.ti),backgroundColor:'#3b82f6',borderRadius:5},{label:'Egresos',data:meses.map(x=>x.te),backgroundColor:'#ef4444',borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{font:{size:10,weight:'600'},boxWidth:12}}},scales:{y:{ticks:{callback:v=>fmtM(v),font:{size:9}},grid:{color:'rgba(0,0,0,.05)'}},x:{ticks:{font:{size:9}}}}}});
+    const c2=$('ch-cmp');if(c2)CH['cmp']=new Chart(c2,{type:'bar',data:{labels:['Ingresos','Egresos','Resultado'],datasets:[{label:'Real '+a,data:[ti,te,ti-te],backgroundColor:['#93c5fd','#fca5a5','#86efac'],borderRadius:5},{label:'Proyectado '+ap,data:[ip,ep,ip-ep],backgroundColor:['#1d4ed8','#dc2626','#16a34a'],borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{font:{size:9,weight:'600'},boxWidth:10}}},scales:{y:{ticks:{callback:v=>fmtM(v),font:{size:9}}}}}});
+    const byCli={};CACHE.ingresos.filter(x=>x.anio==a).forEach(x=>{byCli[x.cli]=(byCli[x.cli]||0)+(+x.imp||0);});
+    const sorted=Object.entries(byCli).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const c3=$('ch-cl');if(c3)CH['cl']=new Chart(c3,{type:'bar',data:{labels:sorted.map(([id])=>{const n=gCli(+id);return n.length>24?n.slice(0,24)+'…':n;}),datasets:[{label:'Facturación',data:sorted.map(([,v])=>v),backgroundColor:'#3b82f6',borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{callback:v=>fmtM(v),font:{size:9}}},y:{ticks:{font:{size:10,weight:'600'}}}}}});
+  },80);
+}
+
+// ═══════════════════════════════════════════════════════
+// INGRESOS
+// ═══════════════════════════════════════════════════════
+function rIng(){
+  const a=anio,ip=iPI(a),ti=totI(0,a);
+  $('MC').innerHTML=`
+<div class="g2">
+  <div>
+    <div class="card card-accent-green">
+      <div class="ct"><div class="ct-i ci-green">↑</div>Nuevo ingreso — ${a} <span class="real-t">año en curso</span></div>
+      <div class="fg"><label>Empresa *</label><select id="fi-cl"><option value="">— Seleccionar empresa —</option>${CACHE.clientes.map(c=>`<option value="${c.id}">${c.n}</option>`).join('')}</select></div>
+      <div class="frow">
+        <div class="fg"><label>Importe *</label><input type="number" id="fi-im" class="inp-big" placeholder="0" min="0" step="0.01"></div>
+        <div class="fg"><label>IVA</label><input type="number" id="fi-iv" style="font-size:14px;padding:10px 12px" placeholder="0.00" min="0" step="0.01"></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label>Fecha *</label><input type="date" id="fi-fe" value="${a}-01-01"></div>
+        <div class="fg"><label>Producto</label><select id="fi-po"><option value="">Sin producto</option>${CACHE.productos.map(p=>`<option>${p.n}</option>`).join('')}</select></div>
+      </div>
+      <div class="fg"><label>Observaciones</label><textarea id="fi-ob" placeholder="Notas..."></textarea></div>
+      <div class="fa"><button class="btn bs" id="btn-ing" onclick="guardarIng()">💾 Guardar ingreso</button><button class="btn bg" onclick="limpIng()">Limpiar</button></div>
+    </div>
+    <div class="card card-accent-amber">
+      <div class="ct"><div class="ct-i ci-amber">◈</div>A lograr en ${a+1} <span class="proy-t">IPC ${CFG.ipc}%</span></div>
+      <div class="fbox">
+        <div class="fl">Reales ${a} × (1 + ${CFG.ipc}%)</div>
+        <div class="fc">${fmtM(ti)} × ${(1+CFG.ipc/100).toFixed(2)} =</div>
+        <div class="fr">${fmtM(ip)}</div>
+      </div>
+    </div>
+  </div>
+  <div class="card card-accent-blue">
+    <div class="ct"><div class="ct-i ci-blue">⊞</div>Ingresos — ${a} <span class="real-t">sin IPC</span></div>
+    <div class="alert a-info no-print">Para borrar un registro mal ingresado usá el botón rojo ✕ en la fila.</div>
+    <div class="filters">
+      <span style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em">Filtrar:</span>
+      <select id="fi-fm" onchange="filtIng()"><option value="">Todos los meses</option>${MESES.map((m,i)=>`<option value="${i+1}">${m}</option>`).join('')}</select>
+      <select id="fi-fp" onchange="filtIng()"><option value="">Todos los productos</option>${CACHE.productos.map(p=>`<option>${p.n}</option>`).join('')}</select>
+    </div>
+    <div id="tbl-ing"></div>
+  </div>
+</div>`;
+  filtIng();
+}
+function filtIng(){
+  const a=anio,m=parseInt($('fi-fm')?.value)||0,p=$('fi-fp')?.value||'';
+  const rows=CACHE.ingresos.filter(x=>x.anio==a&&(!m||x.mes==m)&&(!p||x.prod==p));
+  const tot=rows.reduce((s,x)=>s+(+x.imp||0)+(+x.iva||0),0);
+  $('tbl-ing').innerHTML=`<div class="tbl-w"><table>
+<thead><tr><th>Empresa</th><th>Prod.</th><th>Importe</th><th>IVA</th><th>Total</th><th>Mes</th><th class="no-print">Acción</th></tr></thead>
+<tbody>${rows.map((r,i)=>`<tr>
+  <td style="font-weight:600">${gCli(r.cli)}</td>
+  <td>${r.prod?`<span class="badge b-blue">${r.prod}</span>`:'-'}</td>
+  <td style="font-size:13px;font-weight:700">$${fmt(r.imp)}</td>
+  <td style="color:var(--gray-400)">${r.iva&&+r.iva>0?'$'+fmt(r.iva):'-'}</td>
+  <td style="font-weight:700;color:var(--green)">$${fmt((+r.imp||0)+(+r.iva||0))}</td>
+  <td><span class="badge b-gray">${MESES[((+r.mes||1)-1)].slice(0,3)}</span></td>
+  <td class="no-print"><button class="btn-del" onclick="pedirBorrIng(${i},'${gCli(r.cli).replace(/'/g,"\\'")}','$${fmt(r.imp)}')">✕ Borrar</button></td>
+</tr>`).join('')||'<tr><td colspan="7" style="text-align:center;color:var(--gray-400);padding:18px">Sin registros para este filtro</td></tr>'}</tbody>
+<tfoot><tr class="tr-tot"><td colspan="2"><b>Total (${rows.length})</b></td><td colspan="3"><b style="font-size:13px;color:var(--green)">$${fmt(tot)}</b></td><td colspan="2"></td></tr></tfoot>
+</table></div>`;
+  window._fIngRows=rows;
+}
+function pedirBorrIng(i,emp,monto){const r=window._fIngRows[i];confirmarBorrado(`Empresa: ${emp}  |  Monto: ${monto}  |  Fecha: ${r.fecha||'—'}`,()=>borrarIng(r.id));}
+async function borrarIng(id){
+  CACHE.ingresos=CACHE.ingresos.filter(x=>x.id!=id);saveCache();
+  if(CFG.scriptUrl){try{const si=DATA_BASE.ingresos.length+1;await apiCall('deleteRow',{sheet:'Ingresos',rowIndex:si});}catch(e){}}
+  toast('✔ Ingreso eliminado','tok');filtIng();
+}
+async function guardarIng(){
+  const c=parseInt($('fi-cl').value),imp=parseFloat($('fi-im').value)||0,iva=parseFloat($('fi-iv').value)||0,fec=$('fi-fe').value;
+  if(!c||!imp||!fec){toast('Completá Empresa, Importe y Fecha','terr');return;}
+  const btn=$('btn-ing');btn.disabled=true;btn.textContent='Guardando...';
+  const d=new Date(fec),id=Date.now();
+  const obj={id,cli:c,prod:$('fi-po').value,imp,iva,fecha:fec,mes:d.getMonth()+1,anio:d.getFullYear(),obs:$('fi-ob').value||''};
+  CACHE.ingresos.push(obj);saveCache();
+  if(CFG.scriptUrl){try{await apiCall('append',{sheet:'Ingresos',row:[id,c,obj.prod,imp,iva,fec,obj.mes,obj.anio,obj.obs]});}catch(e){toast('⚡ Guardado local (sin Sheets)','twarn');}}
+  else toast('⚡ Guardado local — configurá Sheets para sincronizar','twarn');
+  if(CFG.scriptUrl)toast('✔ Ingreso guardado en Google Sheets','tok');
+  filtIng();limpIng();btn.disabled=false;btn.textContent='💾 Guardar ingreso';
+}
+function limpIng(){['fi-im','fi-iv','fi-ob'].forEach(id=>{const el=$(id);if(el)el.value=''});}
+
+// ═══════════════════════════════════════════════════════
+// EGRESOS
+// ═══════════════════════════════════════════════════════
+function rEgr(){
+  const a=anio,te=totE(0,a),ep=iPET(a);
+  $('MC').innerHTML=`
+<div class="g2">
+  <div>
+    <div class="card card-accent-red">
+      <div class="ct"><div class="ct-i ci-red">↓</div>Nuevo egreso — ${a} <span class="real-t">año en curso</span></div>
+      <div class="fg"><label>Rubro *</label><select id="fe-rub" onchange="updT()"><option value="">— Seleccionar rubro —</option>${rNms().map(r=>`<option>${r}</option>`).join('')}</select></div>
+      <div class="fg"><label>Tipo de gasto *</label><select id="fe-tip"><option value="">— Primero seleccioná un rubro —</option></select></div>
+      <div class="fg">
+        <label>Monto * <span style="font-size:10px;color:var(--gray-400);font-weight:400;text-transform:none;letter-spacing:0">(sin puntos, número completo)</span></label>
+        <input type="number" id="fe-mo" class="inp-big" placeholder="Ej: 32000000" min="0" step="0.01">
+      </div>
+      <div class="frow">
+        <div class="fg"><label>Fecha *</label><input type="date" id="fe-fe" value="${a}-01-01"></div>
+        <div class="fg"><label>Asignado a</label><input type="text" id="fe-as" placeholder="Área o persona"></div>
+      </div>
+      <div class="fa"><button class="btn bd" id="btn-egr" onclick="guardarEgr()">💾 Guardar egreso</button><button class="btn bg" onclick="limpEgr()">Limpiar</button></div>
+    </div>
+    <div class="card card-accent-amber">
+      <div class="ct"><div class="ct-i ci-amber">◈</div>Egresos estimados ${a+1} <span class="proy-t">IPC ${CFG.ipc}%</span></div>
+      <div class="alert a-warn" style="margin-bottom:10px">Los egresos de ${a} son <b>valores reales</b>. El IPC solo proyecta ${a+1}.</div>
+      <div class="fbox">
+        <div class="fl">Total ${a} × (1 + ${CFG.ipc}%)</div>
+        <div class="fc">${fmtM(te)} × ${(1+CFG.ipc/100).toFixed(2)} =</div>
+        <div class="fr fr-r">${fmtM(ep)}</div>
+      </div>
+      <div class="sep"></div>
+      <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:8px">Estimado por rubro — ${a+1}</div>
+      ${rNms().map((r,i)=>{const b=totER(r,a)||totER(r,2026),p=iPER(r,a),pct=(CACHE.ajustes[r]||{}).pct>0?(CACHE.ajustes[r]).pct:CFG.ipc;return`<div class="inc-row"><span class="rub r${i%5}" style="font-size:10px">${r.length>16?r.slice(0,16)+'…':r}</span><span style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--gray-400)">Real: $${fmt(b)}</span><span style="font-weight:700;color:var(--red)">→ $${fmt(p)}</span><span style="background:var(--amber-l);color:var(--amber);padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700">+${pct}%</span></span></div>`;}).join('')}
+    </div>
+  </div>
+  <div class="card card-accent-blue">
+    <div class="ct"><div class="ct-i ci-blue">⊞</div>Egresos — ${a} <span class="real-t">sin IPC</span></div>
+    <div class="alert a-info no-print">Para borrar un gasto mal ingresado usá el botón rojo ✕ en la fila.</div>
+    <div class="filters">
+      <span style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em">Filtrar:</span>
+      <select id="fe-fm" onchange="filtEgr()"><option value="">Todos los meses</option>${MESES.map((m,i)=>`<option value="${i+1}">${m}</option>`).join('')}</select>
+      <select id="fe-fr" onchange="filtEgr()"><option value="">Todos los rubros</option>${rNms().map(r=>`<option>${r}</option>`).join('')}</select>
+    </div>
+    <div id="tbl-egr"></div>
+  </div>
+</div>`;
+  filtEgr();
+}
+function updT(){
+  const rn=$('fe-rub').value,s=$('fe-tip'),ro=CACHE.rubros.find(x=>x.n===rn);
+  s.innerHTML='<option value="">— Seleccionar tipo —</option>';
+  if(ro)CACHE.tiposGasto.filter(x=>x.rubId==ro.id).forEach(t=>{const o=document.createElement('option');o.textContent=t.n;s.appendChild(o);});
+}
+function filtEgr(){
+  const a=anio,m=parseInt($('fe-fm')?.value)||0,r=$('fe-fr')?.value||'';
+  const rows=CACHE.egresos.filter(x=>x.anio==a&&(!m||x.mes==m)&&(!r||x.rub==r));
+  const tot=rows.reduce((s,x)=>s+(+x.monto||0),0);
+  $('tbl-egr').innerHTML=`<div class="tbl-w"><table>
+<thead><tr><th>Rubro</th><th>Tipo de gasto</th><th>Monto real</th><th>Est. ${a+1}</th><th>Mes</th><th class="no-print">Acción</th></tr></thead>
+<tbody>${rows.map((r,i)=>{const pct=(CACHE.ajustes[r.rub]||{}).pct>0?(CACHE.ajustes[r.rub]).pct:CFG.ipc,p=Math.round((+r.monto||0)*(1+pct/100));return`<tr>
+  <td><span class="rub ${rCls(r.rub)}">${r.rub.length>14?r.rub.slice(0,14)+'…':r.rub}</span></td>
+  <td style="max-width:200px;font-size:11px">${r.tipo.length>35?r.tipo.slice(0,35)+'…':r.tipo}</td>
+  <td style="font-size:13px;font-weight:700">$${fmt(r.monto)}</td>
+  <td style="font-weight:700;color:var(--red)">$${fmt(p)}</td>
+  <td><span class="badge b-gray">${MESES[((+r.mes||1)-1)].slice(0,3)}</span></td>
+  <td class="no-print"><button class="btn-del" onclick="pedirBorrEgr(${i},'${r.tipo.replace(/'/g,"\\'").slice(0,28)}','$${fmt(r.monto)}')">✕ Borrar</button></td>
+</tr>`;}).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:18px">Sin registros</td></tr>'}</tbody>
+<tfoot><tr class="tr-tot"><td colspan="2"><b>Total (${rows.length})</b></td><td><b style="font-size:13px;color:var(--red)">$${fmt(tot)}</b></td><td><b style="color:var(--red)">$${fmt(rows.reduce((s,r)=>{const p=(CACHE.ajustes[r.rub]||{}).pct>0?(CACHE.ajustes[r.rub]).pct:CFG.ipc;return s+Math.round((+r.monto||0)*(1+p/100));},0))}</b></td><td colspan="2"></td></tr></tfoot>
+</table></div>`;
+  window._fEgrRows=rows;
+}
+function pedirBorrEgr(i,tipo,monto){const r=window._fEgrRows[i];confirmarBorrado(`Rubro: ${r.rub}  |  Tipo: ${tipo}  |  Monto: ${monto}  |  Fecha: ${r.fecha||'—'}`,()=>borrarEgr(r.id));}
+async function borrarEgr(id){
+  CACHE.egresos=CACHE.egresos.filter(x=>x.id!=id);saveCache();
+  toast('✔ Egreso eliminado','tok');filtEgr();
+}
+async function guardarEgr(){
+  const r=$('fe-rub').value,t=$('fe-tip').value,m=parseFloat($('fe-mo').value)||0,f=$('fe-fe').value;
+  if(!r||!t||!m||!f){toast('Completá Rubro, Tipo, Monto y Fecha','terr');return;}
+  const btn=$('btn-egr');btn.disabled=true;btn.textContent='Guardando...';
+  const d=new Date(f),id=Date.now();
+  const asig=$('fe-as').value||r;
+  const obj={id,rub:r,tipo:t,monto:m,fecha:f,mes:d.getMonth()+1,anio:d.getFullYear(),asig};
+  CACHE.egresos.push(obj);saveCache();
+  if(CFG.scriptUrl){try{await apiCall('append',{sheet:'Egresos',row:[id,r,t,m,f,obj.mes,obj.anio,asig]});toast('✔ Egreso guardado en Google Sheets','tok');}catch(e){toast('⚡ Guardado local (sin Sheets)','twarn');}}
+  else toast('⚡ Guardado local — configurá Sheets para sincronizar','twarn');
+  filtEgr();limpEgr();btn.disabled=false;btn.textContent='💾 Guardar egreso';
+}
+function limpEgr(){['fe-mo','fe-as'].forEach(id=>{const el=$(id);if(el)el.value=''});}
+
+// ═══════════════════════════════════════════════════════
+// CLIENTES
+// ═══════════════════════════════════════════════════════
+function rCli(){
+  $('MC').innerHTML=`
+<div class="g2">
+  <div class="card card-accent-blue">
+    <div class="ct"><div class="ct-i ci-blue">◉</div>Nuevo cliente</div>
+    <div class="fg"><label>Nombre / Razón social *</label>
+      <input type="text" id="fc-n" placeholder="Nombre completo de la empresa" oninput="chkDupCli()">
+      <div id="fc-dup" class="dup-warn">⚠ Este cliente ya está cargado</div>
+    </div>
+    <div class="fg"><label>Tipo</label><select id="fc-t"><option>EMPRESA</option><option>OTROS</option></select></div>
+    <div class="fg"><label>CUIT</label><input type="text" id="fc-c" placeholder="XX-XXXXXXXX-X"></div>
+    <div class="frow">
+      <div class="fg"><label>Email</label><input type="email" id="fc-e"></div>
+      <div class="fg"><label>Teléfono</label><input type="text" id="fc-tel"></div>
+    </div>
+    <div class="fa"><button class="btn bp" id="btn-cli" onclick="guardarCli()">💾 Guardar cliente</button><button class="btn bg" onclick="limpCli()">Limpiar</button></div>
+  </div>
+  <div class="card card-accent-blue">
+    <div class="ct"><div class="ct-i ci-blue">⊞</div>Clientes registrados (${CACHE.clientes.length})</div>
+    <div class="filters"><input id="fc-s" type="text" placeholder="Buscar..." oninput="filtCli()" style="min-width:180px"><select id="fc-ft" onchange="filtCli()"><option value="">Todos</option><option>EMPRESA</option><option>OTROS</option></select></div>
+    <div id="tbl-cli"></div>
+  </div>
+</div>`;
+  filtCli();
+}
+function chkDupCli(){
+  const n=($('fc-n')?.value||'').trim().toUpperCase(),dup=CACHE.clientes.find(c=>c.n&&c.n.toUpperCase()===n);
+  const d=$('fc-dup'),b=$('btn-cli');
+  if(dup&&n){d.style.display='block';d.textContent='⚠ "'+dup.n+'" ya existe.';b.disabled=true;b.style.opacity='.4';}
+  else{d.style.display='none';b.disabled=false;b.style.opacity='1';}
+}
+function filtCli(){
+  const q=($('fc-s')?.value||'').toLowerCase(),t=$('fc-ft')?.value||'';
+  const rows=CACHE.clientes.filter(c=>(!q||(c.n||'').toLowerCase().includes(q))&&(!t||c.t===t));
+  const fac={};CACHE.ingresos.forEach(x=>{fac[x.cli]=(fac[x.cli]||0)+(+x.imp||0);});
+  $('tbl-cli').innerHTML=`<div class="tbl-w"><table><thead><tr><th>Empresa</th><th>Tipo</th><th>CUIT</th><th>Fact. real</th><th>Proy. ${anio+1}</th></tr></thead>
+<tbody>${rows.map(c=>{const r=fac[c.id]||0,p=Math.round(r*(1+CFG.ipc/100));return`<tr><td style="font-weight:700">${c.n}</td><td><span class="badge ${c.t==='EMPRESA'?'b-blue':'b-gray'}">${c.t}</span></td><td style="font-size:11px;color:var(--gray-400)">${c.cuit||'-'}</td><td style="color:var(--blue);font-weight:700">${r?'$'+fmt(r):'-'}</td><td style="color:var(--green);font-weight:700">${p?'$'+fmt(p):'-'}</td></tr>`;}).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--gray-400);padding:18px">Sin clientes</td></tr>'}</tbody></table></div>`;
+}
+async function guardarCli(){
+  const n=($('fc-n')?.value||'').trim();if(!n){toast('El nombre es obligatorio','terr');return;}
+  const nu=n.toUpperCase();if(CACHE.clientes.find(c=>c.n&&c.n.toUpperCase()===nu)){toast('⚠ "'+nu+'" ya existe','terr');return;}
+  const btn=$('btn-cli');btn.disabled=true;btn.textContent='Guardando...';
+  const id=Date.now(),t=$('fc-t').value;
+  const obj={id,n:nu,t,cuit:$('fc-c').value||'',email:$('fc-e').value||'',tel:$('fc-tel').value||''};
+  CACHE.clientes.push(obj);saveCache();
+  if(CFG.scriptUrl){try{await apiCall('append',{sheet:'Clientes',row:[id,nu,t,obj.cuit,obj.email,obj.tel]});toast('✔ Cliente guardado en Sheets','tok');}catch(e){toast('⚡ Guardado local','twarn');}}
+  else toast('⚡ Guardado local — configurá Sheets para sincronizar','twarn');
+  limpCli();rCli();btn.disabled=false;btn.textContent='💾 Guardar cliente';
+}
+function limpCli(){['fc-n','fc-c','fc-e','fc-tel'].forEach(id=>{const el=$(id);if(el)el.value=''});chkDupCli();}
+
+// ═══════════════════════════════════════════════════════
+// PRESUPUESTO / IPC
+// ═══════════════════════════════════════════════════════
+function rPres(){
+  const a=anio,ti=totI(0,a)||totI(0,2026),te=totE(0,a)||totE(0,2026),ip=iPI(a),ep=iPET(a);
+  $('MC').innerHTML=`
+<div class="card card-accent-amber">
+  <div class="ct"><div class="ct-i ci-amber">◈</div>IPC INDEC — configuración central <span class="auto-t">fuente única</span></div>
+  <div class="alert a-warn">El IPC <b>NO modifica</b> los datos de ${a} — son valores reales. Solo proyecta el año ${a+1}.</div>
+  <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:10px">
+    <div style="flex:1;min-width:220px">
+      <div style="font-size:11px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">IPC anual estimado &nbsp;<a href="https://www.indec.gob.ar" target="_blank" style="color:var(--blue);font-size:11px;font-weight:600">indec.gob.ar →</a></div>
+      <input type="range" min="0" max="200" step="1" value="${CFG.ipc}" id="sl-ipc" oninput="actIPC(this.value)" style="width:100%;height:6px;cursor:pointer;accent-color:var(--amber)">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--gray-400);margin-top:4px;font-weight:600"><span>0%</span><span>50%</span><span>100%</span><span>150%</span><span>200%</span></div>
+    </div>
+    <div style="text-align:center;min-width:150px">
+      <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">IPC para ${a+1}</div>
+      <div id="lbl-ipc" class="ipc-disp">${CFG.ipc}%</div>
+      <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;justify-content:center">
+        <button class="stab ${CFG.ipc==45?'on':''}" onclick="setEsc(45)">Optimista 45%</button>
+        <button class="stab ${CFG.ipc==35?'on':''}" onclick="setEsc(35)">Moderado 35%</button>
+        <button class="stab ${CFG.ipc==55?'on':''}" onclick="setEsc(55)">Conservador 55%</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="metrics">
+  <div class="met mb"><div class="ml">Ingresos reales ${a}</div><div class="mv mv-bl">${fmtM(ti)}</div><div class="ms">sin IPC</div></div>
+  <div class="met mg"><div class="ml">A lograr en ${a+1}</div><div class="mv mv-up" id="m-ip">${fmtM(ip)}</div><div class="ms">${fmtM(ti)} × ${(1+CFG.ipc/100).toFixed(2)}</div></div>
+  <div class="met mr"><div class="ml">Egresos reales ${a}</div><div class="mv mv-dn">${fmtM(te)}</div><div class="ms">sin IPC</div></div>
+  <div class="met mr"><div class="ml">Egresos estimados ${a+1}</div><div class="mv mv-dn" id="m-ep">${fmtM(ep)}</div><div class="ms">base + IPC</div></div>
+</div>
+<div class="card card-accent-blue">
+  <div class="ct"><div class="ct-i ci-blue">⊞</div>Ajuste por rubro — ${a+1} <span class="auto-t">usa IPC global si no se modifica</span></div>
+  <div id="tbl-rubros"></div>
+</div>`;
+  rendRubros();
+}
+async function actIPC(v){
+  CFG.ipc=parseInt(v);localStorage.setItem('sa_ipc',String(CFG.ipc));syncChips();
+  const el=$('lbl-ipc');if(el)el.textContent=v+'%';
+  const a=anio,ti=totI(0,a)||totI(0,2026);
+  const mi=$('m-ip');if(mi)mi.textContent=fmtM(iPI(a));
+  const me=$('m-ep');if(me)me.textContent=fmtM(iPET(a));
+  rendRubros();
+  if(CFG.scriptUrl){try{await apiCall('setIpc',{ipc:CFG.ipc});}catch(e){}}
+}
+function setEsc(v){CFG.ipc=v;const sl=$('sl-ipc');if(sl)sl.value=v;actIPC(v);document.querySelectorAll('.stab').forEach(el=>{el.classList.toggle('on',el.textContent.includes(v+'%'));});}
+function rendRubros(){
+  const a=anio,ap=a+1,el=$('tbl-rubros');if(!el)return;
+  el.innerHTML=`<div class="tbl-w"><table><thead><tr><th>Rubro</th><th>Real ${a}</th><th>% propio (0 = IPC ${CFG.ipc}%)</th><th>Monto fijo</th><th>Estimado ${ap}</th><th>Var.</th></tr></thead>
+<tbody>${rNms().map((r,i)=>{
+  if(!CACHE.ajustes[r])CACHE.ajustes[r]={pct:0,manual:0};
+  const d=CACHE.ajustes[r],b=totER(r,a)||totER(r,2026),fin=iPER(r,a),pct=d.pct>0?d.pct:CFG.ipc,usaG=!d.pct&&!d.manual,vp=b>0?Math.round((fin-b)/b*100):pct;
+  return`<tr>
+<td><span class="rub r${i%5}">${r}</span>${usaG?`<span class="auto-t" style="margin-left:6px">IPC auto</span>`:''}</td>
+<td style="font-weight:700">$${fmt(b)}</td>
+<td><input type="number" value="${d.pct||''}" placeholder="${CFG.ipc}" min="0" max="500" style="width:68px;font-size:12px;padding:5px 8px;border:1.5px solid var(--gray-200);border-radius:var(--r);font-family:inherit" oninput="setAj('${r}',this.value)">%</td>
+<td><input type="number" value="${d.manual||''}" placeholder="0 = auto" min="0" style="width:140px;font-size:12px;padding:5px 8px;border:1.5px solid var(--gray-200);border-radius:var(--r);font-family:inherit" oninput="setMan('${r}',this.value)"></td>
+<td style="font-weight:700;color:var(--red)">$${fmt(fin)}</td>
+<td><span style="background:${vp>CFG.ipc+5?'var(--amber-l)':'var(--green-l)'};color:${vp>CFG.ipc+5?'var(--amber)':'var(--green)'};padding:3px 9px;border-radius:5px;font-size:11px;font-weight:700">+${vp}%</span></td>
+</tr>`;}).join('')}</tbody>
+<tfoot><tr class="tr-tot"><td><b>Total</b></td><td><b>$${fmt(rNms().reduce((s,r)=>s+(totER(r,a)||totER(r,2026)),0))}</b></td><td colspan="2"></td><td style="color:var(--red)"><b>$${fmt(iPET(a))}</b></td><td></td></tr></tfoot></table></div>`;
+}
+function setAj(r,v){if(!CACHE.ajustes[r])CACHE.ajustes[r]={pct:0,manual:0};CACHE.ajustes[r].pct=parseFloat(v)||0;saveCache();rendRubros();}
+function setMan(r,v){if(!CACHE.ajustes[r])CACHE.ajustes[r]={pct:0,manual:0};CACHE.ajustes[r].manual=parseFloat(v)||0;saveCache();rendRubros();}
+
+// ═══════════════════════════════════════════════════════
+// PROYECCIONES
+// ═══════════════════════════════════════════════════════
+function rProy(){
+  const a=anio,ti=totI(0,a)||totI(0,2026),te=totE(0,a)||totE(0,2026),ip=iPI(a),ep=iPET(a),res=ip-ep;
+  $('MC').innerHTML=`
+<div class="p-wrap no-print"><button class="btn bpu" onclick="window.print()">🖨 Imprimir proyecciones</button></div>
+<div class="alert a-info"><b>Año ${a}:</b> datos reales del Excel (sin IPC). <b>Año ${a+1}:</b> reales × (1 + ${CFG.ipc}% IPC). Cambiá el IPC en Presupuesto para recalcular.</div>
+<div class="metrics">
+  <div class="met mb"><div class="ml">Reales ${a}</div><div class="mv mv-bl">${fmtM(ti)}</div></div>
+  <div class="met mg"><div class="ml">A lograr en ${a+1}</div><div class="mv mv-up">${fmtM(ip)}</div><div class="ms">+${CFG.ipc}%</div></div>
+  <div class="met mr"><div class="ml">Egresos estim. ${a+1}</div><div class="mv mv-dn">${fmtM(ep)}</div></div>
+  <div class="met ${res>=0?'mg':'mr'}"><div class="ml">Resultado proy. ${a+1}</div><div class="mv ${res>=0?'mv-up':'mv-dn'}">${res>=0?'+':'-'}${fmtM(Math.abs(res))}</div></div>
+</div>
+<div class="card card-accent-blue"><div class="ct"><div class="ct-i ci-blue">↗</div>Histórico + proyección ${a+1}</div><div style="position:relative;height:220px"><canvas id="ch-ph"></canvas></div></div>
+<div class="g22">
+  <div class="card card-accent-green"><div class="ct"><div class="ct-i ci-green">◉</div>Por cliente — real vs estimado ${a+1}</div>
+  <div class="tbl-w"><table><thead><tr><th>Cliente</th><th>Real ${a}</th><th>Estim. ${a+1}</th><th>Incremento</th></tr></thead>
+  <tbody>${CACHE.ingresos.filter(x=>x.anio==a&&(+x.imp||0)>0).sort((a,b)=>(+b.imp||0)-(+a.imp||0)).map(r=>{const p=Math.round((+r.imp||0)*(1+CFG.ipc/100));return`<tr><td style="font-weight:600">${gCli(r.cli)}</td><td style="font-weight:700">$${fmt(r.imp)}</td><td style="color:var(--green);font-weight:700">$${fmt(p)}</td><td style="color:var(--amber)">+$${fmt(p-(+r.imp||0))}</td></tr>`;}).join('')}</tbody>
+  <tfoot><tr class="tr-tot"><td><b>Total</b></td><td><b>$${fmt(ti)}</b></td><td style="color:var(--green)"><b>$${fmt(ip)}</b></td><td style="color:var(--amber)"><b>+$${fmt(ip-ti)}</b></td></tr></tfoot></table></div></div>
+  <div class="card card-accent-red"><div class="ct"><div class="ct-i ci-red">↓</div>Por rubro — real vs estimado ${a+1}</div>
+  <div class="tbl-w"><table><thead><tr><th>Rubro</th><th>Real ${a}</th><th>Estim. ${a+1}</th><th>Incremento</th></tr></thead>
+  <tbody>${rNms().map((r,i)=>{const b=totER(r,a)||totER(r,2026),f=iPER(r,a);return`<tr><td><span class="rub r${i%5}">${r.length>16?r.slice(0,16)+'…':r}</span></td><td style="font-weight:700">$${fmt(b)}</td><td style="color:var(--red);font-weight:700">$${fmt(f)}</td><td style="color:var(--amber)">+$${fmt(f-b)}</td></tr>`;}).join('')}</tbody>
+  <tfoot><tr class="tr-tot"><td><b>Total</b></td><td><b>$${fmt(te)}</b></td><td style="color:var(--red)"><b>$${fmt(ep)}</b></td><td style="color:var(--amber)"><b>+$${fmt(ep-te)}</b></td></tr></tfoot></table></div></div>
+</div>`;
+  setTimeout(()=>{
+    const hL=HIST.p.slice(-12),hI=HIST.i.slice(-12),hE=HIST.e.slice(-12);
+    const c=$('ch-ph');if(c)CH['ph']=new Chart(c,{type:'line',data:{labels:[...hL,String(a+1)],datasets:[
+      {label:'Ing. reales',data:[...hI,null],borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,.08)',fill:true,tension:.35,pointRadius:2,borderWidth:2},
+      {label:'A lograr '+(a+1),data:[...new Array(hI.length-1).fill(null),hI[hI.length-1],ip],borderColor:'#16a34a',borderDash:[6,4],pointRadius:[...new Array(hI.length-1).fill(0),5],borderWidth:2.5,fill:false},
+      {label:'Egr. reales',data:[...hE,null],borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,.06)',fill:true,tension:.35,pointRadius:2,borderWidth:2},
+      {label:'Egr. estimados '+(a+1),data:[...new Array(hE.length-1).fill(null),hE[hE.length-1],ep],borderColor:'#f59e0b',borderDash:[6,4],pointRadius:[...new Array(hE.length-1).fill(0),5],borderWidth:2,fill:false}
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{font:{size:10,weight:'600'},boxWidth:12}}},scales:{y:{ticks:{callback:v=>fmtM(v),font:{size:9}},grid:{color:'rgba(0,0,0,.04)'}},x:{ticks:{font:{size:8,weight:'600'},maxRotation:45,autoSkip:false}}}}});
+  },80);
+}
+
+// ═══════════════════════════════════════════════════════
+// INFORMES
+// ═══════════════════════════════════════════════════════
+function rInf(){
+  const a=anio,ti=totI(0,a),te=totE(0,a),res=ti-te,ip=iPI(a),ep=iPET(a);
+  $('MC').innerHTML=`
+<div class="p-wrap no-print"><button class="btn bpu" onclick="window.print()">🖨 Imprimir informe</button></div>
+<div style="font-size:20px;font-weight:800;color:var(--navy);margin-bottom:16px;letter-spacing:-.02em">Informe Administrativo — Año ${a}</div>
+<div class="metrics">
+  <div class="met mb"><div class="ml">Ingresos reales ${a}</div><div class="mv mv-bl">${fmtM(ti)}</div></div>
+  <div class="met mr"><div class="ml">Egresos reales ${a}</div><div class="mv mv-dn">${fmtM(te)}</div></div>
+  <div class="met ${res>=0?'mg':'mr'}"><div class="ml">Resultado neto</div><div class="mv ${res>=0?'mv-up':'mv-dn'}">${res>=0?'+':'-'}${fmtM(Math.abs(res))}</div></div>
+  <div class="met ma"><div class="ml">Proyección ${a+1}</div><div class="mv mv-wa">${fmtM(ip)}</div><div class="ms">IPC ${CFG.ipc}%</div></div>
+</div>
+<div class="card card-accent-blue"><div class="ct"><div class="ct-i ci-blue">↗</div>Evolución histórica + proyección</div><div style="position:relative;height:220px"><canvas id="ch-ih"></canvas></div></div>
+<div class="g22">
+  <div class="card card-accent-red"><div class="ct"><div class="ct-i ci-red">◎</div>Egresos por rubro ${a}</div><div style="position:relative;height:210px"><canvas id="ch-ir"></canvas></div></div>
+  <div class="card card-accent-blue"><div class="ct"><div class="ct-i ci-blue">⊞</div>Resumen por rubro</div>
+  <div class="tbl-w"><table><thead><tr><th>Rubro</th><th>Real ${a}</th><th>% sobre ing.</th><th>Estimado ${a+1}</th></tr></thead>
+  <tbody>${rNms().map((r,i)=>{const t2=totER(r,a),f=iPER(r,a);return`<tr><td><span class="rub r${i%5}">${r.length>15?r.slice(0,15)+'…':r}</span></td><td style="font-weight:700">$${fmt(t2)}</td><td><span style="background:var(--gray-100);color:var(--gray-600);padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700">${ti>0?Math.round(t2/ti*100):0}%</span></td><td style="color:var(--red);font-weight:700">$${fmt(f)}</td></tr>`;}).join('')}</tbody>
+  <tfoot><tr class="tr-tot"><td><b>Total</b></td><td><b>$${fmt(te)}</b></td><td><b>${ti>0?Math.round(te/ti*100):0}%</b></td><td style="color:var(--red)"><b>$${fmt(ep)}</b></td></tr></tfoot></table></div></div>
+</div>`;
+  setTimeout(()=>{
+    const c1=$('ch-ih');if(c1)CH['ih']=new Chart(c1,{type:'line',data:{labels:[...HIST.p,String(a+1)],datasets:[
+      {label:'Ing. reales',data:[...HIST.i,null],borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,.08)',fill:true,tension:.35,pointRadius:2,borderWidth:2},
+      {label:'Proyección',data:[...new Array(HIST.i.length-1).fill(null),HIST.i[HIST.i.length-1],ip],borderColor:'#16a34a',borderDash:[5,5],pointRadius:[...new Array(HIST.i.length-1).fill(0),4],borderWidth:2,fill:false},
+      {label:'Egr. reales',data:[...HIST.e,null],borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,.06)',fill:true,tension:.35,pointRadius:2,borderWidth:2},
+      {label:'Proy. egresos',data:[...new Array(HIST.e.length-1).fill(null),HIST.e[HIST.e.length-1],ep],borderColor:'#f59e0b',borderDash:[5,5],pointRadius:[...new Array(HIST.e.length-1).fill(0),4],borderWidth:2,fill:false}
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{font:{size:10,weight:'600'},boxWidth:12}}},scales:{y:{ticks:{callback:v=>fmtM(v),font:{size:9}}},x:{ticks:{font:{size:8},maxRotation:45,autoSkip:false}}}}});
+    const byR={};rNms().forEach(r=>byR[r]=0);CACHE.egresos.filter(x=>x.anio==anio).forEach(x=>{byR[x.rub]=(byR[x.rub]||0)+(+x.monto||0);});
+    const c2=$('ch-ir');if(c2)CH['ir']=new Chart(c2,{type:'doughnut',data:{labels:rNms().map(r=>r.length>15?r.slice(0,15)+'…':r),datasets:[{data:rNms().map(r=>byR[r]),backgroundColor:['#3b82f6','#22c55e','#f59e0b','#ef4444','#a855f7'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:10,weight:'600'},boxWidth:12}}}}});
+  },80);
+}
+
+// ═══════════════════════════════════════════════════════
+// EXPORTAR EXCEL
+// ═══════════════════════════════════════════════════════
+function rExp(){
+  const hoy=new Date().toISOString().slice(0,10),ini=anio+'-01-01';
+  $('MC').innerHTML=`
+<div class="card card-accent-blue">
+  <div class="ct"><div class="ct-i ci-blue">⬇</div>Exportar informes a Excel <span style="font-size:11px;color:var(--gray-400);font-weight:500">(.csv — abre directo en Excel)</span></div>
+  <div class="alert a-info" style="margin-bottom:0">Seleccioná el rango de fechas. "Previsualizar" muestra los registros antes de descargar. Los archivos salen ordenados por fecha.</div>
+</div>
+<div class="g22">
+  <div class="card card-accent-green">
+    <div class="ct"><div class="ct-i ci-green">↑</div>Exportar Ingresos</div>
+    <div class="frow"><div class="fg"><label>Desde *</label><input type="date" id="ei-d" value="${ini}"></div><div class="fg"><label>Hasta *</label><input type="date" id="ei-h" value="${hoy}"></div></div>
+    <div class="fg"><label>Empresa (opcional)</label><select id="ei-c"><option value="">Todas las empresas</option>${CACHE.clientes.map(c=>`<option value="${c.id}">${c.n}</option>`).join('')}</select></div>
+    <div class="fg"><label>Producto (opcional)</label><select id="ei-p"><option value="">Todos los productos</option>${CACHE.productos.map(p=>`<option>${p.n}</option>`).join('')}</select></div>
+    <div class="fa"><button class="btn bg" onclick="prevI()">👁 Previsualizar</button><button class="btn bs" onclick="expI()">⬇ Descargar Excel</button></div>
+    <div id="prv-i" style="margin-top:12px"></div>
+  </div>
+  <div class="card card-accent-red">
+    <div class="ct"><div class="ct-i ci-red">↓</div>Exportar Egresos</div>
+    <div class="frow"><div class="fg"><label>Desde *</label><input type="date" id="ee-d" value="${ini}"></div><div class="fg"><label>Hasta *</label><input type="date" id="ee-h" value="${hoy}"></div></div>
+    <div class="fg"><label>Rubro (opcional)</label><select id="ee-r"><option value="">Todos los rubros</option>${rNms().map(r=>`<option>${r}</option>`).join('')}</select></div>
+    <div class="fg"><label>Buscar tipo de gasto</label><input type="text" id="ee-t" placeholder="Escribí para filtrar..."></div>
+    <div class="fa"><button class="btn bg" onclick="prevE()">👁 Previsualizar</button><button class="btn bd" onclick="expE()">⬇ Descargar Excel</button></div>
+    <div id="prv-e" style="margin-top:12px"></div>
+  </div>
+</div>
+<div class="card card-accent-amber">
+  <div class="ct"><div class="ct-i ci-amber">◈</div>Exportar Resumen Combinado (Ingresos + Egresos + Resumen mensual)</div>
+  <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+    <div class="fg" style="margin:0;flex:1;min-width:130px"><label>Desde</label><input type="date" id="er-d" value="${ini}"></div>
+    <div class="fg" style="margin:0;flex:1;min-width:130px"><label>Hasta</label><input type="date" id="er-h" value="${hoy}"></div>
+    <button class="btn bw" onclick="expR()">⬇ Descargar Resumen Excel</button>
+  </div>
+</div>`;
+}
+function gIF(){const d=$('ei-d')?.value||'',h=$('ei-h')?.value||'',c=parseInt($('ei-c')?.value)||0,p=$('ei-p')?.value||'';return CACHE.ingresos.filter(x=>(!d||x.fecha>=d)&&(!h||x.fecha<=h)&&(!c||x.cli==c)&&(!p||x.prod==p)).sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha)));}
+function gEF(){const d=$('ee-d')?.value||'',h=$('ee-h')?.value||'',r=$('ee-r')?.value||'',t=($('ee-t')?.value||'').toLowerCase();return CACHE.egresos.filter(x=>(!d||x.fecha>=d)&&(!h||x.fecha<=h)&&(!r||x.rub==r)&&(!t||x.tipo.toLowerCase().includes(t))).sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha)));}
+function prevI(){const rows=gIF(),tot=rows.reduce((s,x)=>s+(+x.imp||0)+(+x.iva||0),0),el=$('prv-i');if(!el)return;if(!rows.length){el.innerHTML='<div class="alert a-warn">Sin registros para ese período.</div>';return;}el.innerHTML=`<div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px">${rows.length} registros — Total: <span style="color:var(--green)">$${fmt(tot)}</span></div><div class="tbl-w" style="max-height:220px;overflow-y:auto"><table><thead><tr><th>Fecha</th><th>Empresa</th><th>Prod.</th><th>Importe</th><th>Total</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.fecha}</td><td style="font-weight:600">${gCli(r.cli)}</td><td>${r.prod||'-'}</td><td>$${fmt(r.imp)}</td><td style="color:var(--green);font-weight:700">$${fmt((+r.imp||0)+(+r.iva||0))}</td></tr>`).join('')}</tbody><tfoot><tr class="tr-tot"><td colspan="4"><b>TOTAL</b></td><td style="color:var(--green)"><b>$${fmt(tot)}</b></td></tr></tfoot></table></div>`;}
+function prevE(){const rows=gEF(),tot=rows.reduce((s,x)=>s+(+x.monto||0),0),el=$('prv-e');if(!el)return;if(!rows.length){el.innerHTML='<div class="alert a-warn">Sin registros para ese período.</div>';return;}el.innerHTML=`<div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px">${rows.length} registros — Total: <span style="color:var(--red)">$${fmt(tot)}</span></div><div class="tbl-w" style="max-height:220px;overflow-y:auto"><table><thead><tr><th>Fecha</th><th>Rubro</th><th>Tipo</th><th>Monto</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.fecha}</td><td><span class="rub ${rCls(r.rub)}">${r.rub.length>12?r.rub.slice(0,12)+'…':r.rub}</span></td><td style="font-size:11px">${r.tipo.length>28?r.tipo.slice(0,28)+'…':r.tipo}</td><td style="color:var(--red);font-weight:700">$${fmt(r.monto)}</td></tr>`).join('')}</tbody><tfoot><tr class="tr-tot"><td colspan="3"><b>TOTAL</b></td><td style="color:var(--red)"><b>$${fmt(tot)}</b></td></tr></tfoot></table></div>`;}
+function dlCSV(csv,nm){const b=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=nm;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);}
+function expI(){const rows=gIF();if(!rows.length){toast('Sin registros para ese período','twarn');return;}const d=$('ei-d').value,h=$('ei-h').value,tot=rows.reduce((s,x)=>s+(+x.imp||0)+(+x.iva||0),0);let c=`INFORME DE INGRESOS\r\nPeríodo:,${d} al ${h}\r\nTotal registros:,${rows.length}\r\nTotal:,$${fmt(tot)}\r\n\r\nFecha,Empresa,Producto,Importe,IVA,Total c/IVA,Mes,Año,Observaciones\r\n`;rows.forEach(r=>{c+=`${r.fecha},"${gCli(r.cli)}","${r.prod||''}",${r.imp||0},${r.iva||0},${(+r.imp||0)+(+r.iva||0)},${r.mes||''},${r.anio||''},"${r.obs||''}"\r\n`;});c+=`\r\nTOTAL GENERAL:,,,,,${tot}\r\n`;dlCSV(c,`Ingresos_${d}_al_${h}.csv`);toast(`✔ ${rows.length} ingresos exportados`,'tok');}
+function expE(){const rows=gEF();if(!rows.length){toast('Sin registros para ese período','twarn');return;}const d=$('ee-d').value,h=$('ee-h').value,tot=rows.reduce((s,x)=>s+(+x.monto||0),0),pr={};rows.forEach(r=>{pr[r.rub]=(pr[r.rub]||0)+(+r.monto||0);});let c=`INFORME DE EGRESOS\r\nPeríodo:,${d} al ${h}\r\nTotal registros:,${rows.length}\r\nTotal:,$${fmt(tot)}\r\n\r\nFecha,Rubro,Tipo de Gasto,Monto,Asignado a,Mes,Año\r\n`;rows.forEach(r=>{c+=`${r.fecha},"${r.rub}","${r.tipo}",${r.monto||0},"${r.asig||''}",${r.mes||''},${r.anio||''}\r\n`;});c+=`\r\nSUBTOTALES POR RUBRO\r\nRubro,Total\r\n`;Object.entries(pr).sort((a,b)=>b[1]-a[1]).forEach(([r,v])=>{c+=`"${r}",${v}\r\n`;});c+=`\r\nTOTAL GENERAL:,,${tot}\r\n`;dlCSV(c,`Egresos_${d}_al_${h}.csv`);toast(`✔ ${rows.length} egresos exportados`,'tok');}
+function expR(){const d=$('er-d')?.value||'',h=$('er-h')?.value||'';const ing=CACHE.ingresos.filter(x=>(!d||x.fecha>=d)&&(!h||x.fecha<=h)).sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha)));const egr=CACHE.egresos.filter(x=>(!d||x.fecha>=d)&&(!h||x.fecha<=h)).sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha)));if(!ing.length&&!egr.length){toast('Sin registros','twarn');return;}const tI=ing.reduce((s,x)=>s+(+x.imp||0)+(+x.iva||0),0),tE=egr.reduce((s,x)=>s+(+x.monto||0),0),mes={};ing.forEach(x=>{const k=(x.anio||'?')+'-'+String(x.mes||'?').padStart(2,'0');if(!mes[k])mes[k]={i:0,e:0};mes[k].i+=(+x.imp||0)+(+x.iva||0);});egr.forEach(x=>{const k=(x.anio||'?')+'-'+String(x.mes||'?').padStart(2,'0');if(!mes[k])mes[k]={i:0,e:0};mes[k].e+=(+x.monto||0);});let c='=== INGRESOS ===\r\n';c+=`Período: ${d} al ${h}   |   Total: $${fmt(tI)}   |   Registros: ${ing.length}\r\n\r\n`;c+='Fecha,Empresa,Producto,Importe,IVA,Total c/IVA\r\n';ing.forEach(r=>{c+=`${r.fecha},"${gCli(r.cli)}","${r.prod||''}",${r.imp||0},${r.iva||0},${(+r.imp||0)+(+r.iva||0)}\r\n`;});c+=`\r\nTOTAL INGRESOS:,,,,,${tI}\r\n\r\n\r\n=== EGRESOS ===\r\n`;c+=`Período: ${d} al ${h}   |   Total: $${fmt(tE)}   |   Registros: ${egr.length}\r\n\r\n`;c+='Fecha,Rubro,Tipo de Gasto,Monto\r\n';egr.forEach(r=>{c+=`${r.fecha},"${r.rub}","${r.tipo}",${r.monto||0}\r\n`;});c+=`\r\nTOTAL EGRESOS:,,,${tE}\r\n\r\n\r\n=== RESUMEN MENSUAL ===\r\nAño-Mes,Ingresos,Egresos,Resultado,% Incidencia\r\n`;Object.keys(mes).sort().forEach(k=>{const m=mes[k],r=m.i-m.e;c+=`${k},${m.i},${m.e},${r},${m.i>0?Math.round(m.e/m.i*100):0}%\r\n`;});c+=`\r\nTOTAL:,${tI},${tE},${tI-tE},${tI>0?Math.round(tE/tI*100):0}%\r\n`;dlCSV(c,`Resumen_${d}_al_${h}.csv`);toast(`✔ Resumen exportado: ${ing.length} ingresos + ${egr.length} egresos`,'tok');}
+
+// ═══════════════════════════════════════════════════════
+// BASE DE DATOS
+// ═══════════════════════════════════════════════════════
+function rBase(){
+  $('MC').innerHTML=`
+<div class="alert a-info">Desde aquí agregás nuevos clientes, rubros, tipos de gasto y productos. Todo se guarda localmente y en Google Sheets (si está configurado), y queda disponible de inmediato en los formularios.</div>
+<div class="g22">
+  <div>
+    <div class="card card-accent-blue">
+      <div class="ct"><div class="ct-i ci-blue">◉</div>Nuevo cliente / empresa</div>
+      <div class="fg"><label>Nombre / Razón social *</label>
+        <input type="text" id="bc-n" placeholder="Nombre completo" oninput="chkBC()">
+        <div id="bc-dup" class="dup-warn">⚠ Este cliente ya existe</div>
+      </div>
+      <div class="fg"><label>Tipo</label><select id="bc-t"><option value="EMPRESA">EMPRESA</option><option value="OTROS">OTROS</option></select></div>
+      <div class="fg"><label>CUIT</label><input type="text" id="bc-c" placeholder="XX-XXXXXXXX-X"></div>
+      <div class="frow">
+        <div class="fg"><label>Email</label><input type="email" id="bc-e"></div>
+        <div class="fg"><label>Teléfono</label><input type="text" id="bc-tel"></div>
+      </div>
+      <div class="fa"><button class="btn bp" id="bc-btn" onclick="agCli()">💾 Guardar cliente</button><button class="btn bg" onclick="limpBC()">Limpiar</button></div>
+    </div>
+    <div class="card" style="margin-top:0">
+      <div class="ct"><div class="ct-i ci-blue">⊞</div>Clientes registrados (${CACHE.clientes.length})</div>
+      <div class="filters"><input id="bc-s" type="text" placeholder="Buscar..." oninput="filtBC()"></div>
+      <div id="tbl-clib"></div>
+    </div>
+  </div>
+  <div>
+    <div class="card card-accent-red">
+      <div class="ct"><div class="ct-i ci-red">↓</div>Nuevo rubro de egresos</div>
+      <div class="fg"><label>Nombre del rubro *</label>
+        <input type="text" id="br-n" placeholder="Ej: MARKETING" oninput="chkBR()">
+        <div id="br-dup" class="dup-warn">⚠ Este rubro ya existe</div>
+      </div>
+      <button class="btn bd" id="br-btn" onclick="agRub()" style="width:100%">➕ Agregar rubro</button>
+      <div class="sep"></div>
+      <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:8px">Rubros actuales</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">${CACHE.rubros.map((r,i)=>`<span class="rub r${i%5}">${r.n}</span>`).join('')}</div>
+    </div>
+    <div class="card" style="margin-top:0">
+      <div class="ct"><div class="ct-i ci-amber">◈</div>Nuevo tipo de gasto</div>
+      <div class="fg"><label>Rubro *</label><select id="bt-r" onchange="chkBT()">${CACHE.rubros.map(r=>`<option value="${r.id}">${r.n}</option>`).join('')}</select></div>
+      <div class="fg"><label>Nombre del tipo *</label>
+        <input type="text" id="bt-n" placeholder="Ej: NUEVO PROVEEDOR SA" oninput="chkBT()">
+        <div id="bt-dup" class="dup-warn">⚠ Ya existe en ese rubro</div>
+      </div>
+      <button class="btn bw" id="bt-btn" onclick="agTipo()" style="width:100%;margin-bottom:10px">➕ Agregar tipo de gasto</button>
+      <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px">Tipos por rubro</div>
+      <div style="max-height:260px;overflow-y:auto">
+        ${CACHE.rubros.map((r,ri)=>`<div style="margin-bottom:10px"><div style="font-size:10px;font-weight:700;color:var(--navy);padding:3px 0;border-bottom:1px solid var(--gray-100);margin-bottom:3px"><span class="rub r${ri%5}">${r.n}</span></div>${CACHE.tiposGasto.filter(t=>t.rubId==r.id).map(t=>`<div style="font-size:11px;padding:2px 6px;color:var(--gray-600)">• ${t.n}</div>`).join('')||'<div style="font-size:11px;color:var(--gray-400);padding:2px 6px">Sin tipos</div>'}</div>`).join('')}
+      </div>
+    </div>
+    <div class="card card-accent-green" style="margin-top:0">
+      <div class="ct"><div class="ct-i ci-green">◉</div>Nuevo producto / servicio</div>
+      <div class="fg"><label>Nombre *</label>
+        <input type="text" id="bp-n" placeholder="BASE, SCORE, MOTOR, KEY..." oninput="chkBP()">
+        <div id="bp-dup" class="dup-warn">⚠ Ya existe</div>
+      </div>
+      <button class="btn bs" id="bp-btn" onclick="agProd()" style="width:100%;margin-bottom:8px">➕ Agregar producto</button>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">${CACHE.productos.map(p=>`<span class="badge b-blue" style="font-size:12px;padding:5px 12px">${p.n}</span>`).join('')}</div>
+    </div>
+  </div>
+</div>`;
+  filtBC();
+}
+function chkBC(){const n=($('bc-n')?.value||'').trim().toUpperCase(),dup=CACHE.clientes.find(c=>c.n&&c.n.toUpperCase()===n),d=$('bc-dup'),b=$('bc-btn');if(dup&&n){d.style.display='block';b.disabled=true;b.style.opacity='.4';}else{d.style.display='none';b.disabled=false;b.style.opacity='1';}}
+function chkBR(){const n=($('br-n')?.value||'').trim().toUpperCase(),dup=CACHE.rubros.find(r=>r.n.toUpperCase()===n),d=$('br-dup'),b=$('br-btn');if(dup&&n){d.style.display='block';b.disabled=true;b.style.opacity='.4';}else{d.style.display='none';b.disabled=false;b.style.opacity='1';}}
+function chkBT(){const rid=parseInt($('bt-r')?.value),n=($('bt-n')?.value||'').trim().toUpperCase(),dup=CACHE.tiposGasto.find(t=>t.rubId==rid&&t.n.toUpperCase()===n),d=$('bt-dup'),b=$('bt-btn');if(dup&&n){d.style.display='block';b.disabled=true;b.style.opacity='.4';}else{d.style.display='none';b.disabled=false;b.style.opacity='1';}}
+function chkBP(){const n=($('bp-n')?.value||'').trim().toUpperCase(),dup=CACHE.productos.find(p=>p.n.toUpperCase()===n),d=$('bp-dup'),b=$('bp-btn');if(dup&&n){d.style.display='block';b.disabled=true;b.style.opacity='.4';}else{d.style.display='none';b.disabled=false;b.style.opacity='1';}}
+function filtBC(){const q=($('bc-s')?.value||'').toLowerCase(),rows=CACHE.clientes.filter(c=>!q||(c.n||'').toLowerCase().includes(q)),fac={};CACHE.ingresos.forEach(x=>{fac[x.cli]=(fac[x.cli]||0)+(+x.imp||0);});const el=$('tbl-clib');if(!el)return;el.innerHTML=`<div class="tbl-w" style="max-height:260px;overflow-y:auto"><table><thead><tr><th>Empresa</th><th>Tipo</th><th>CUIT</th><th>Fact.</th></tr></thead><tbody>${rows.map(c=>{const r=fac[c.id]||0;return`<tr><td style="font-weight:700">${c.n}</td><td><span class="badge ${c.t==='EMPRESA'?'b-blue':'b-gray'}">${c.t}</span></td><td style="font-size:11px;color:var(--gray-400)">${c.cuit||'-'}</td><td style="color:var(--blue);font-weight:700">${r?'$'+fmt(r):'-'}</td></tr>`;}).join('')}</tbody></table></div>`;}
+function limpBC(){['bc-n','bc-c','bc-e','bc-tel'].forEach(id=>{const el=$(id);if(el)el.value=''});chkBC();}
+async function agCli(){
+  const n=($('bc-n')?.value||'').trim();if(!n){toast('El nombre es obligatorio','terr');return;}
+  const nu=n.toUpperCase();if(CACHE.clientes.find(c=>c.n&&c.n.toUpperCase()===nu)){toast('⚠ "'+nu+'" ya existe','terr');return;}
+  const btn=$('bc-btn');btn.disabled=true;btn.textContent='Guardando...';
+  const id=Date.now(),t=$('bc-t').value;
+  const obj={id,n:nu,t,cuit:$('bc-c').value||'',email:$('bc-e').value||'',tel:$('bc-tel').value||''};
+  CACHE.clientes.push(obj);saveCache();
+  if(CFG.scriptUrl){try{await apiCall('append',{sheet:'Clientes',row:[id,nu,t,obj.cuit,obj.email,obj.tel]});toast('✔ Cliente "'+nu+'" guardado en Sheets','tok');}catch(e){toast('⚡ Guardado local','twarn');}}
+  else toast('⚡ Guardado local — configurá Sheets para sincronizar','twarn');
+  limpBC();rBase();btn.disabled=false;btn.textContent='💾 Guardar cliente';
+}
+async function agRub(){
+  const n=($('br-n')?.value||'').trim().toUpperCase();if(!n){toast('Ingresá un nombre','terr');return;}
+  if(CACHE.rubros.find(r=>r.n.toUpperCase()===n)){toast('⚠ Ya existe','terr');return;}
+  const btn=$('br-btn');btn.disabled=true;btn.textContent='Guardando...';const id=Date.now();
+  CACHE.rubros.push({id,n,activo:true});if(!CACHE.ajustes[n])CACHE.ajustes[n]={pct:0,manual:0};saveCache();
+  if(CFG.scriptUrl){try{await apiCall('append',{sheet:'Rubros',row:[id,n,true]});toast('✔ Rubro "'+n+'" agregado en Sheets','tok');}catch(e){toast('⚡ Guardado local','twarn');}}
+  else toast('⚡ Guardado local','twarn');
+  const el=$('br-n');if(el)el.value='';rBase();btn.disabled=false;btn.textContent='➕ Agregar rubro';
+}
+async function agTipo(){
+  const rid=parseInt($('bt-r')?.value),n=($('bt-n')?.value||'').trim().toUpperCase();if(!n){toast('Ingresá el nombre','terr');return;}
+  if(CACHE.tiposGasto.find(t=>t.rubId==rid&&t.n.toUpperCase()===n)){toast('⚠ Ya existe','terr');return;}
+  const btn=$('bt-btn');btn.disabled=true;btn.textContent='Guardando...';const id=Date.now();
+  CACHE.tiposGasto.push({id,rubId:rid,n});saveCache();
+  if(CFG.scriptUrl){try{await apiCall('append',{sheet:'TiposGasto',row:[id,rid,n]});toast('✔ Tipo "'+n+'" agregado','tok');}catch(e){toast('⚡ Guardado local','twarn');}}
+  else toast('⚡ Guardado local','twarn');
+  const el=$('bt-n');if(el)el.value='';rBase();btn.disabled=false;btn.textContent='➕ Agregar tipo de gasto';
+}
+async function agProd(){
+  const n=($('bp-n')?.value||'').trim().toUpperCase();if(!n){toast('Ingresá un nombre','terr');return;}
+  if(CACHE.productos.find(p=>p.n.toUpperCase()===n)){toast('⚠ Ya existe','terr');return;}
+  const btn=$('bp-btn');btn.disabled=true;btn.textContent='Guardando...';const id=Date.now();
+  CACHE.productos.push({id,n});saveCache();
+  if(CFG.scriptUrl){try{await apiCall('append',{sheet:'Productos',row:[id,n]});toast('✔ Producto "'+n+'" agregado','tok');}catch(e){toast('⚡ Guardado local','twarn');}}
+  else toast('⚡ Guardado local','twarn');
+  const el=$('bp-n');if(el)el.value='';rBase();btn.disabled=false;btn.textContent='➕ Agregar producto';
+}
+
+// ═══════════════════════════════════════════════════════
+// GUÍA GOOGLE SHEETS
+// ═══════════════════════════════════════════════════════
+function rGuia(){
+  $('MC').innerHTML=`
+<div class="card card-accent-blue">
+  <div class="ct"><div class="ct-i ci-blue">?</div>Qué cargar en Google Sheets y cómo conectar el sistema</div>
+  <div class="alert a-info" style="margin-bottom:0">Seguí estos pasos en orden. Tiempo total: 15 minutos. Solo se hace una vez.</div>
+</div>
+
+<div class="card card-accent-blue">
+  <div class="ct"><div class="ct-i ci-blue" style="font-size:14px;font-weight:800">1</div>Crear la planilla y las 7 hojas en Google Sheets</div>
+  <div class="step-card"><div class="step-n">1</div><div class="step-body"><div class="step-t">Crear planilla nueva</div><div class="step-d">Ir a <a href="https://sheets.google.com" target="_blank" style="color:var(--blue);font-weight:700">sheets.google.com</a> → Planilla en blanco → nombrarla <strong>SistemaAdmin_Datos</strong>.</div></div></div>
+  <div class="step-card"><div class="step-n">2</div><div class="step-body"><div class="step-t">Crear exactamente 7 hojas (pestañas)</div><div class="step-d">Clic derecho en la pestaña inferior → "Insertar hoja" → nombrarla. Repetir hasta tener las 7.</div></div></div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin:10px 0 14px">
+    <span class="sheet-tab st-g">Ingresos</span><span class="sheet-tab st-b">Egresos</span>
+    <span class="sheet-tab st-o">Clientes</span><span class="sheet-tab st-p">Rubros</span>
+    <span class="sheet-tab st-gr">TiposGasto</span><span class="sheet-tab st-g">Productos</span>
+    <span class="sheet-tab st-b">Config</span>
+  </div>
+</div>
+
+<div class="card card-accent-green">
+  <div class="ct"><div class="ct-i ci-green" style="font-size:14px;font-weight:800">2</div>Qué escribir en la fila 1 de cada hoja (encabezados exactos)</div>
+  <div class="alert a-warn" style="margin-bottom:16px">Los nombres de columna deben ser <strong>exactamente iguales</strong> — mismas mayúsculas/minúsculas, sin espacios extras.</div>
+
+  <div style="margin-bottom:18px">
+    <div style="display:flex;gap:3px"><span class="sheet-tab st-g" style="border-radius:5px 5px 0 0">Ingresos</span></div>
+    <div class="sh-tbl"><table><thead><tr><th>id</th><th>cli</th><th>prod</th><th>imp</th><th>iva</th><th>fecha</th><th>mes</th><th>anio</th><th>obs</th></tr></thead>
+    <tbody><tr><td>1748563200000</td><td>2</td><td>SCORE</td><td>86381636</td><td>0</td><td>2026-01-01</td><td>1</td><td>2026</td><td></td></tr>
+    <tr><td colspan="9" style="color:var(--gray-400);font-style:normal;font-size:11px">← Fila 2 en adelante: datos del sistema. cli = ID del cliente (número).</td></tr></tbody></table></div>
+  </div>
+
+  <div style="margin-bottom:18px">
+    <div style="display:flex;gap:3px"><span class="sheet-tab st-b" style="border-radius:5px 5px 0 0">Egresos</span></div>
+    <div class="sh-tbl"><table><thead><tr><th>id</th><th>rub</th><th>tipo</th><th>monto</th><th>fecha</th><th>mes</th><th>anio</th><th>asig</th></tr></thead>
+    <tbody><tr><td>1748563300000</td><td>REMUNERACIONES</td><td>SUELDO PERSONAL</td><td>99200000</td><td>2026-01-01</td><td>1</td><td>2026</td><td>REMUNERACIONES</td></tr></tbody></table></div>
+  </div>
+
+  <div style="margin-bottom:18px">
+    <div style="display:flex;gap:3px"><span class="sheet-tab st-o" style="border-radius:5px 5px 0 0">Clientes</span></div>
+    <div class="sh-tbl"><table><thead><tr><th>id</th><th>n</th><th>t</th><th>cuit</th><th>email</th><th>tel</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>CENCOSUD</td><td>EMPRESA</td><td></td><td></td><td></td></tr>
+      <tr><td>2</td><td>TARJETA NARANJA</td><td>EMPRESA</td><td></td><td></td><td></td></tr>
+      <tr><td colspan="6" style="color:var(--gray-400);font-style:normal;font-size:11px">← Cargar los 20 clientes del Excel con sus IDs 1-20. O usar el botón "Cargar datos iniciales" en la pestaña ⚙ Configurar.</td></tr>
+    </tbody></table></div>
+  </div>
+
+  <div style="margin-bottom:18px">
+    <div style="display:flex;gap:3px"><span class="sheet-tab st-p" style="border-radius:5px 5px 0 0">Rubros</span></div>
+    <div class="sh-tbl"><table><thead><tr><th>id</th><th>n</th><th>activo</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>REMUNERACIONES</td><td>TRUE</td></tr>
+      <tr><td>2</td><td>SERVICIOS</td><td>TRUE</td></tr>
+      <tr><td>3</td><td>GASTOS ACTIVIDAD</td><td>TRUE</td></tr>
+      <tr><td>4</td><td>IMPUESTOS</td><td>TRUE</td></tr>
+      <tr><td>5</td><td>PLANES MEDICOS COMPANIA</td><td>TRUE</td></tr>
+    </tbody></table></div>
+  </div>
+
+  <div style="margin-bottom:18px">
+    <div style="display:flex;gap:3px"><span class="sheet-tab st-gr" style="border-radius:5px 5px 0 0">TiposGasto</span></div>
+    <div class="sh-tbl"><table><thead><tr><th>id</th><th>rubId</th><th>n</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>1</td><td>SUELDO DIRECTOR MGS</td></tr>
+      <tr><td>2</td><td>1</td><td>SUELDO DIRECTOR SEGAL S</td></tr>
+      <tr><td>3</td><td>1</td><td>SUELDO PERSONAL</td></tr>
+      <tr><td>5</td><td>2</td><td>MOVISTAR Y CLARO</td></tr>
+      <tr><td>7</td><td>2</td><td>ALQUILERES</td></tr>
+      <tr><td>28</td><td>4</td><td>IVA11-12DB+ CUOTA3/6(6)454836-2 /7-1/8(6)</td></tr>
+      <tr><td colspan="3" style="color:var(--gray-400);font-style:normal;font-size:11px">← rubId: 1=REMUNERACIONES, 2=SERVICIOS, 3=GASTOS ACTIVIDAD, 4=IMPUESTOS, 5=PLANES MEDICOS. Cargar los 40 tipos del Excel. O usar "Cargar datos iniciales".</td></tr>
+    </tbody></table></div>
+  </div>
+
+  <div style="margin-bottom:18px">
+    <div style="display:flex;gap:3px"><span class="sheet-tab st-g" style="border-radius:5px 5px 0 0">Productos</span></div>
+    <div class="sh-tbl"><table><thead><tr><th>id</th><th>n</th></tr></thead>
+    <tbody><tr><td>1</td><td>BASE</td></tr><tr><td>2</td><td>SCORE</td></tr><tr><td>3</td><td>MOTOR</td></tr><tr><td>4</td><td>KEY</td></tr></tbody></table></div>
+  </div>
+
+  <div style="margin-bottom:4px">
+    <div style="display:flex;gap:3px"><span class="sheet-tab st-b" style="border-radius:5px 5px 0 0">Config</span></div>
+    <div class="sh-tbl"><table><thead><tr><th>clave</th><th>valor</th></tr></thead>
+    <tbody><tr><td>ipc</td><td>35</td></tr></tbody></table></div>
+  </div>
+</div>
+
+<div class="card card-accent-amber">
+  <div class="ct"><div class="ct-i ci-amber" style="font-size:14px;font-weight:800">3</div>Crear el script de conexión (Apps Script)</div>
+  <div class="step-card"><div class="step-n">1</div><div class="step-body"><div class="step-t">Abrir Apps Script</div><div class="step-d">En la planilla → menú <strong>Extensiones → Apps Script</strong></div></div></div>
+  <div class="step-card"><div class="step-n">2</div><div class="step-body"><div class="step-t">Reemplazar el código con el siguiente</div><div class="step-d">Seleccionar todo (Ctrl+A), borrar, pegar:</div></div></div>
+  <div class="code-block"><pre>function doGet(e) {
+  var action = e.parameter.action;
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var result = {};
+
+  if (action === 'getAll') {
+    result.ingresos   = sheetToArray(ss.getSheetByName('Ingresos'));
+    result.egresos    = sheetToArray(ss.getSheetByName('Egresos'));
+    result.clientes   = sheetToArray(ss.getSheetByName('Clientes'));
+    result.rubros     = sheetToArray(ss.getSheetByName('Rubros'));
+    result.tiposGasto = sheetToArray(ss.getSheetByName('TiposGasto'));
+    result.productos  = sheetToArray(ss.getSheetByName('Productos'));
+    var cfg = sheetToArray(ss.getSheetByName('Config'));
+    var ipcRow = cfg.find(function(r){ return r.clave === 'ipc'; });
+    result.ipc = ipcRow ? parseFloat(ipcRow.valor) : 35;
+    result.ajustes = {};
+  }
+  if (action === 'append') {
+    var data = JSON.parse(e.parameter.data);
+    var sheet = ss.getSheetByName(data.sheet);
+    sheet.appendRow(data.row);
+    result.ok = true;
+  }
+  if (action === 'deleteRow') {
+    var data = JSON.parse(e.parameter.data);
+    var sheet = ss.getSheetByName(data.sheet);
+    sheet.deleteRow(parseInt(data.rowIndex));
+    result.ok = true;
+  }
+  if (action === 'setIpc') {
+    var data = JSON.parse(e.parameter.data);
+    var cfg = ss.getSheetByName('Config');
+    var vals = cfg.getDataRange().getValues();
+    for (var i = 1; i < vals.length; i++) {
+      if (vals[i][0] === 'ipc') { cfg.getRange(i+1, 2).setValue(data.ipc); }
+    }
+    result.ok = true;
+  }
+  return ContentService
+    .createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function sheetToArray(sheet) {
+  if (!sheet) return [];
+  var data = sheet.getDataRange().getValues();
+  if (data.length < 2) return [];
+  var headers = data[0];
+  var rows = [];
+  for (var i = 1; i < data.length; i++) {
+    var row = {};
+    for (var j = 0; j < headers.length; j++) { row[headers[j]] = data[i][j]; }
+    rows.push(row);
+  }
+  return rows;
+}</pre></div>
+</div>
+
+<div class="card card-accent-red">
+  <div class="ct"><div class="ct-i ci-red" style="font-size:14px;font-weight:800">4</div>Publicar y conectar</div>
+  <div class="step-card"><div class="step-n">1</div><div class="step-body"><div class="step-t">Publicar como aplicación web</div><div class="step-d">En Apps Script → <strong>Implementar → Nueva implementación</strong> → Tipo: <strong>Aplicación web</strong><br>• Ejecutar como: <strong>Yo</strong> &nbsp;&nbsp; • Acceso: <strong>Cualquier persona</strong> → clic en <strong>Implementar</strong></div></div></div>
+  <div class="step-card"><div class="step-n">2</div><div class="step-body"><div class="step-t">Autorizar y copiar la URL</div><div class="step-d">Si pide autorizar → "Revisión avanzada" → "Ir a SistemaAdmin (no seguro)" → Permitir.<br>Copiá la URL que empieza con <code>https://script.google.com/macros/s/...</code></div></div></div>
+  <div class="step-card"><div class="step-n">3</div><div class="step-body"><div class="step-t">Pegar la URL y cargar datos</div><div class="step-d">Ir a pestaña <strong>⚙ Configurar</strong> → pegar la URL → <strong>Guardar y conectar</strong> → <strong>Cargar datos iniciales</strong> (carga los 20 clientes, 5 rubros, 40 tipos y 4 productos del Excel automáticamente).</div></div></div>
+</div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// CONFIGURAR
+// ═══════════════════════════════════════════════════════
+function rConfig(){
+  $('MC').innerHTML=`
+<div class="card card-accent-blue">
+  <div class="ct"><div class="ct-i ci-blue">⚙</div>Conexión con Google Sheets</div>
+  <div class="alert a-info" style="margin-bottom:14px">
+    <div><b>Importante:</b> El sistema ya tiene todos los datos del Excel cargados y funciona sin Google Sheets. Google Sheets se usa para que nuevos ingresos y egresos que cargues queden guardados en la nube y sean visibles desde cualquier PC. Sin configurar, los datos nuevos se guardan solo en este navegador.</div>
+  </div>
+  <div class="fg">
+    <label>URL del Apps Script de Google</label>
+    <input type="text" id="inp-url" placeholder="https://script.google.com/macros/s/XXXXXX.../exec" value="${CFG.scriptUrl}" style="font-size:12px">
+    <div style="font-size:11px;color:var(--gray-400);margin-top:4px">Obtenés esta URL en Apps Script → Implementar → Aplicación web → Cualquier persona. Ver pestaña <strong>? Guía Google Sheets</strong> para el paso a paso completo.</div>
+  </div>
+  <div class="fa" style="margin-bottom:16px">
+    <button class="btn bs" onclick="guardarConfig()">💾 Guardar y conectar</button>
+    <button class="btn bp" onclick="testConex()">🔌 Probar conexión</button>
+    <button class="btn bg" onclick="sincronizar()">↺ Sincronizar ahora</button>
+  </div>
+  <div id="test-result"></div>
+</div>
+<div class="card card-accent-amber">
+  <div class="ct"><div class="ct-i ci-amber">⬆</div>Cargar datos iniciales del Excel en Google Sheets</div>
+  <div style="font-size:12px;color:var(--gray-600);margin-bottom:12px">Si la planilla está vacía (solo con los encabezados), este botón carga automáticamente los 20 clientes, 5 rubros, 4 productos y todos los tipos de gasto del Excel.</div>
+  <button class="btn bw" onclick="cargarDatos()">⬆ Cargar datos iniciales del Excel</button>
+  <div id="load-result" style="margin-top:10px"></div>
+</div>`;
+}
+async function guardarConfig(){
+  const url=($('inp-url')?.value||'').trim();
+  if(!url||!url.startsWith('https://script.google.com')){toast('Pegá una URL válida de Google Apps Script','terr');return;}
+  CFG.scriptUrl=url;localStorage.setItem('sa_script_url',url);
+  toast('✔ URL guardada. Probando conexión...','tok');await testConex();
+}
+async function testConex(){
+  const tr=$('test-result');if(tr)tr.innerHTML='<div class="loading"><span class="spin"></span>Probando...</div>';
+  try{
+    const r=await apiCall('getAll');setConn(true);
+    if(tr)tr.innerHTML=`<div class="alert a-ok">✔ Conexión exitosa. Encontrados: ${r.ingresos?.length||0} ingresos, ${r.clientes?.length||0} clientes.</div>`;
+    toast('✔ Conectado con Google Sheets','tok');await sincronizar();
+  }catch(e){
+    if(tr)tr.innerHTML='<div class="alert a-err">✗ No se pudo conectar. Verificá que la URL sea correcta y el script esté publicado como "Cualquier persona".</div>';
+  }
+}
+async function cargarDatos(){
+  if(!CFG.scriptUrl){toast('Configurá la URL primero','terr');return;}
+  const lr=$('load-result');if(lr)lr.innerHTML='<div class="loading"><span class="spin"></span>Cargando...</div>';
+  // Usar exactamente los datos del Excel
+  const clientes=DATA_BASE.clientes.map(c=>[c.id,c.n,c.t,'','','']);
+  const rubros=DATA_BASE.rubros.map(r=>[r.id,r.n,true]);
+  const productos=DATA_BASE.productos.map(p=>[p.id,p.n]);
+  const tiposG=DATA_BASE.tiposGasto.map(t=>[t.id,t.rubId,t.n]);
+  try{
+    for(const row of clientes)await apiCall('append',{sheet:'Clientes',row});
+    for(const row of rubros)await apiCall('append',{sheet:'Rubros',row});
+    for(const row of productos)await apiCall('append',{sheet:'Productos',row});
+    for(const row of tiposG)await apiCall('append',{sheet:'TiposGasto',row});
+    if(lr)lr.innerHTML='<div class="alert a-ok">✔ Datos del Excel cargados en Google Sheets. Hacé clic en Sincronizar.</div>';
+    toast('✔ Datos cargados','tok');await sincronizar();
+  }catch(e){if(lr)lr.innerHTML='<div class="alert a-err">✗ Error: '+e.message+'</div>';}
+}
+</script>
+</body>
+</html>

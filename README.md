@@ -1,2 +1,0 @@
-# sistemaadmin
-Sistema administrativo web
